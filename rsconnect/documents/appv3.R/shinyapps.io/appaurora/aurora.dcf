@@ -1,0 +1,12 @@
+name: aurora
+title: aurora
+username: appaurora
+account: appaurora
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12802830
+bundleId: 9145863
+url: https://aslrodrigues.shinyapps.io/aurora/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
