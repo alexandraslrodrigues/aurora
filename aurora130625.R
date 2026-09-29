@@ -12,7 +12,17 @@ library(writexl)
 # INTERFACE ---------------------------------------------------------------------
 ## INTRO -------------------------------------------------
 # Define UI for application that draws a histogram
-ui <- page_navbar(
+ui <- tagList(
+  
+  # Add this custom spinner div ABOVE the UI
+  tags$div(class = "shiny-load-container",
+           tags$div(class = "spinner",
+                    tags$div(class = "dot1"),
+                    tags$div(class = "dot2")
+           )
+  ),
+  
+page_navbar(
   useShinyjs(), 
   
   id = "tabs",
@@ -41,8 +51,10 @@ ui <- page_navbar(
   # # Include the favicon in the head of the document
   tags$head(
     tags$link(rel = "icon", type = "image/png", href = "picture_auroraicon.png"),
-    tags$style(HTML(
-      "#home_link {
+    tags$link(rel = "stylesheet", type = "text/css", href = "spinner.css"),
+    
+    tags$style(HTML("
+    #home_link {
       text-decoration: none !important;
       color: #676971;
       font-family: helvetica;
@@ -52,6 +64,12 @@ ui <- page_navbar(
       cursor: pointer;
     }
   ")),
+    
+    tags$script(HTML("
+  $(document).on('shiny:connected', function() {
+    $('.shiny-load-container').remove();
+  });
+")),
     
     # Google Analytics scripts:
     HTML("
@@ -82,7 +100,7 @@ ui <- page_navbar(
     });"
   )),
   
-  
+
   nav_panel_hidden(
     "Home",
     
@@ -157,7 +175,7 @@ ui <- page_navbar(
                                     ),
                                     card_body(
                                       selectInput("input_sex", "Sex of the patient", choices = c("Female", "Male", "NA")),
-                                      numericInput("input_age", "Age of the patient", value = 0, min = 0, max = 100, step = 1)
+                                      numericInput("input_age", "Age of the patient", value = NA, min = 0, max = 100, step = 1)
                                     )
                                     
                                     # checkboxGroupInput(
@@ -2092,34 +2110,34 @@ ui <- page_navbar(
     HTML("
     <h4>Frequently Asked Questions (FAQ)</h4>
     
-    <p><strong>Can I use Aurora on my phone or tablet?</strong><br />
-    Aurora is optimized for desktop browsers. Mobile and tablet support is limited. For the best experience, use recent versions of Chrome, Firefox, or Edge on a desktop or laptop.</p>
-    
-    <p><strong>Which languages are available?</strong><br />
-    The user interface is available in English (US). Generated reports can be exported in English (US) or Portuguese (PT).</p>
-    
-    <p><strong>What is the Aurora Report?</strong><br />
-    The Aurora Report guides you through sections like infarcts, lacunes, and atrophy scores. Each section includes instructions and example images. Aurora follows STRIVE-2 recommendations for small vessel disease reporting. You can optionally enter age and sex for automatic interpretation of the Medial Temporal Atrophy (MTA) scale.</p>
-    
-    <p><strong>Which calculators are available?</strong><br />
-    Atrophy calculators: Global Cortical Atrophy (GCA), Medial Temporal Atrophy (MTA), Entorhinal Cortex Atrophy (ERICA), and Posterior/Parietal Atrophy (Koedam scale). Movement disorder calculators: Morphometric measurements of midbrain, pons, cerebral peduncle, and ventricles, with visual guides for correct technique. Calculators can be used individually, without completing all report steps.</p>
-    
-    <p><strong>Can I export my data from Aurora?</strong><br />
-    Yes. You can export all entered data using the Excel export button in the Aurora Report section, for research, audit, or documentation purposes.</p>
-    
-    <p><strong>Where can I find references and further reading?</strong><br />
-    Most sections and scales in Aurora include direct links to validation studies and clinical guidelines.</p>
-    
-    <p><strong>Are the scales and calculators validated?</strong><br />
-    Yes. All calculators and reporting tools are based on published, peer-reviewed scales with references provided in the app.</p>
+      <p><strong>Can I use Aurora on my phone or tablet?</strong><br />
+  Aurora is optimized for desktop browsers. Mobile and tablet support is limited.</p>
+  
+  <p><strong>Which languages are available?</strong><br />
+  The interface is in English. Reports can be generated in English (US) or Portuguese (PT).</p>
+  
+  <p><strong>What is the Aurora Report?</strong><br />
+The Aurora Report is a structured MRI report currently designed to describe small vessel disease and atrophy. It results from user inputs in selected sections with instructions and example images.</p>
+  
+  <p><strong>Which calculators are included?</strong><br />
+    Atrophy: GCA, MTA, ERICA and Koedam scales. Movement disorders: Midbrain/Pons ratio, MMRPI and MRPI 2.0.</p>
+  
+  <p><strong>Can I export my data?</strong><br />
+  Yes. You can export all input data to Excel from the Aurora Report tab.</p>
+  
+  <p><strong>Are the tools validated?</strong><br />
+  Yes. All scales and calculators are based on peer-reviewed publications.</p>
+  
+  <p><strong>Where can I find references?</strong><br />
+Each section includes direct links to their respective publications.</p>
     
     <p><strong></strong><br />
     
-    <h4>Feedback</h4>
-    <p>Your feedback is important to us. Help improve Aurora by emailing your suggestions or comments to: <a href='mailto:aurora.shinyapps@gmail.com'>aurora.shinyapps@gmail.com</a>.</p>
+ <h4>Feedback</h4>
+    <p>Your feedback is important to us. Help improve Aurora by emailing your suggestions or comments to: <a href='mailto:feedback@aurora-report.com'>feedback@aurora-report.com</a>.</p>
     
     <div class='license'>
-      Aurora © 2024 is licensed under 
+      Aurora © 2025 is licensed under 
       <a href='https://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'>
         Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
       </a>.
@@ -2135,7 +2153,7 @@ ui <- page_navbar(
     tags$head(tags$style(HTML("
     p {
       font-family: Helvetica, sans-serif;
-      text-align: justify;
+      text-align: left;
     }
     h4, h5 {
       font-family: Helvetica, sans-serif;
@@ -2150,31 +2168,49 @@ ui <- page_navbar(
   "))),
     
     HTML("
-    <p>Aurora is a free web-based open-access application developed using R software. It is designed to assist neuroradiologists reporting. Aurora will help you with consulting, inputting results, and calculating scales and scores in dementia and movement disorders. It provides checklists for systematic structured reporting and includes visual guides and references.</p>
-    
-    <p><strong>Alexandra Rodrigues, MD</strong><br />
-    <em>Neuroradiology resident, web development, scientific research</em><br />
-    Neuroradiology department, Hospital de São José, Unidade Local de Saúde São José, Lisboa, Portugal<br />
-    Neuroradiology Unit, Hospital Central do Funchal, Funchal, Portugal - SESARAM<br />
-    NOVA Medical School, Universidade Nova de Lisboa, Lisbon, Portugal</p>
+     <p><strong>Aurora</strong> is a free, open-access web application developed in R to support neuroradiologists in structured reporting. 
+  It provides validated visual scales and calculators for dementia and movement disorders, along with checklists, visual guides, and reference materials to promote systematic and reproducible assessments. The code is available at 
+  <a href='https://github.com/alexandraslrodrigues/aurora' target='_blank'>
+  https://github.com/alexandraslrodrigues/aurora</a>.</p> </p>
+  
+    <p><strong>Alexandra Rodrigues, MD</strong>
+  <a href='https://orcid.org/0000-0001-6241-9446' target='_blank' style='text-decoration:none; margin-left:6px;'>
+    <img src='https://orcid.org/sites/default/files/images/orcid_16x16.png' alt='ORCID iD' style='vertical-align:middle;'/>
+  </a><br />
+  <em>Neuroradiology resident, web development, scientific research</em><br />
+  Neuroradiology department, Hospital de São José, Unidade Local de Saúde São José, Lisboa, Portugal<br />
+  Neuroradiology Unit, Hospital Central do Funchal, Funchal, Portugal – SESARAM<br />
+  NOVA Medical School, Universidade Nova de Lisboa, Lisbon, Portugal</p>
 
-    <p><strong>Gonçalo Gama Lobo, MD</strong><br />
-    <em>Neuroradiologist, scientific consultant</em><br />
-    Neuroradiology department, Hospital de São José, Unidade Local de Saúde São José, Lisboa, Portugal<br />
-    NOVA Medical School, Universidade Nova de Lisboa, Lisbon, Portugal</p>
+  <p><strong>Gonçalo Gama Lobo, MD</strong>
+  <a href='https://orcid.org/0000-0002-7376-9967' target='_blank' style='text-decoration:none; margin-left:6px;'>
+    <img src='https://orcid.org/sites/default/files/images/orcid_16x16.png' alt='ORCID iD' style='vertical-align:middle;'/>
+  </a><br />
+  <em>Neuroradiologist, scientific consultant</em><br />
+  Neuroradiology department, Hospital de São José, Unidade Local de Saúde São José, Lisboa, Portugal<br />
+  NOVA Medical School, Universidade Nova de Lisboa, Lisbon, Portugal</p>
 
-    <p><strong>Tiago Machado, MD</strong><br />
-    <em>Clinical pharmacologist, web development consultant</em><br />
-    Laboratory of Clinical Pharmacology and Therapeutics, Faculdade de Medicina, Universidade de Lisboa, Lisbon, Portugal</p>
+   <p><strong>Tiago Machado, MD</strong>
+  <a href='https://orcid.org/0000-0001-8930-4382' target='_blank' style='text-decoration:none; margin-left:6px;'>
+    <img src='https://orcid.org/sites/default/files/images/orcid_16x16.png' alt='ORCID iD' style='vertical-align:middle;'/>
+  </a><br />
+  <em>Clinical pharmacologist, web development consultant</em><br />
+  Laboratory of Clinical Pharmacology and Therapeutics, Faculdade de Medicina, Universidade de Lisboa, Lisbon, Portugal</p>
 
-    <p><strong>Daniela Jardim Pereira, MD, PhD</strong><br />
-    <em>Neuroradiologist, scientific consultant</em><br />
-    Neurorradiology Functional Unit, Imaging Department, Unidade Local de Saúde de Coimbra, Coimbra, Portugal<br />
-    Faculty of Medicine, University of Coimbra, Coimbra, Portugal<br />
-    Coimbra Institute for Biomedical Imaging and Translational Research (CIBIT), University of Coimbra, Coimbra, Portugal</p>
-
+  <p><strong>Daniela Jardim Pereira, MD, PhD</strong>
+  <a href='https://orcid.org/0000-0002-9700-810X' target='_blank' style='text-decoration:none; margin-left:6px;'>
+    <img src='https://orcid.org/sites/default/files/images/orcid_16x16.png' alt='ORCID iD' style='vertical-align:middle;'/>
+  </a><br />
+  <em>Neuroradiologist, scientific consultant</em><br />
+  Neuroradiology Functional Unit, Imaging Department, Unidade Local de Saúde de Coimbra, Coimbra, Portugal<br />
+  Faculty of Medicine, University of Coimbra, Coimbra, Portugal<br />
+  Coimbra Institute for Biomedical Imaging and Translational Research (CIBIT), University of Coimbra, Coimbra, Portugal</p>
+ </p>
+ </p>
+ </p>
+ </p>
     <div class='license'>
-      Aurora © 2024 is licensed under 
+      Aurora © 2025 is licensed under 
       <a href='https://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'>
         Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
       </a>.
@@ -2188,10 +2224,10 @@ ui <- page_navbar(
   # )
   
 )
+)
 # Define server 
 server <- function(input, output, session) {
-  
-  
+
   ## Home buttons -----
   # observe the action button that jumps to report tab
   observeEvent(input$report, {
@@ -2821,8 +2857,8 @@ server <- function(input, output, session) {
   
   ## Microbleeds --------
   
-  observe({
-    fields <- c(
+  # All microbleed fields in the form (one shared list, used everywhere)
+  mb_fields <- c(
       "brainstem_definite_right", "brainstem_definite_left", 
       "brainstem_possible_right", "brainstem_possible_left",
       "cerebellum_definite_right", "cerebellum_definite_left", 
@@ -2849,10 +2885,21 @@ server <- function(input, output, session) {
       "occipital_possible_right", "occipital_possible_left",
       "insula_definite_right", "insula_definite_left", 
       "insula_possible_right", "insula_possible_left"
-    )
-    for (id in fields) {
+  )
+  
+  # Empty field counts as 0
+  mb0 <- function(v) if (is.null(v) || length(v) == 0 || is.na(v)) 0 else as.numeric(v)
+  
+  # Total number of microbleeds, all regions
+  mb_total <- reactive({
+    sum(vapply(mb_fields, function(id) mb0(input[[id]]), numeric(1)))
+  })
+  
+  # Empty or negative fields go back to 0
+  observe({
+    for (id in mb_fields) {
       val <- input[[id]]
-      if (is.null(val) || is.na(val) || val == "" || !is.numeric(val)) {
+      if (is.null(val) || is.na(val) || !is.numeric(val) || val < 0) {
         updateNumericInput(session, id, value = 0)
       }
     }
@@ -2860,34 +2907,15 @@ server <- function(input, output, session) {
   
   mb_report_text <- reactive({
     if (input$mb_switch) {
-      total_microbleeds <- sum(
-        input$brainstem_definite_right, input$brainstem_definite_left,
-        input$brainstem_possible_right, input$brainstem_possible_left,
-        input$cerebellum_definite_right, input$cerebellum_definite_left,
-        input$cerebellum_possible_right, input$cerebellum_possible_left,
-        input$basal_ganglia_definite_right, input$basal_ganglia_definite_left,
-        input$basal_ganglia_possible_right, input$basal_ganglia_possible_left,
-        input$thalamus_definite_right, input$thalamus_definite_left,
-        input$thalamus_possible_right, input$thalamus_possible_left,
-        input$internal_capsule_definite_right, input$internal_capsule_definite_left,
-        input$internal_capsule_possible_right, input$internal_capsule_possible_left,
-        input$frontal_definite_right, input$frontal_definite_left,
-        input$frontal_possible_right, input$frontal_possible_left,
-        input$parietal_definite_right, input$parietal_definite_left,
-        input$parietal_possible_right, input$parietal_possible_left,
-        input$temporal_definite_right, input$temporal_definite_left,
-        input$temporal_possible_right, input$temporal_possible_left,
-        input$occipital_definite_right, input$occipital_definite_left,
-        input$occipital_possible_right, input$occipital_possible_left,
-        input$insula_definite_right, input$insula_definite_left,
-        input$insula_possible_right, input$insula_possible_left
-      )
+      total_microbleeds <- mb_total()
       
       if (total_microbleeds == 0) {
         return("No cerebral microbleeds identified.")
       }
       
       summarize_region <- function(region, definite_right, definite_left, possible_right, possible_left) {
+        definite_right <- mb0(definite_right); definite_left <- mb0(definite_left)
+        possible_right <- mb0(possible_right); possible_left <- mb0(possible_left)
         entries <- c()
         if (definite_right > 0 || definite_left > 0) {
           definite_list <- c()
@@ -2923,7 +2951,10 @@ server <- function(input, output, session) {
       deep <- c(
         summarize_region("basal ganglia", input$basal_ganglia_definite_right, input$basal_ganglia_definite_left, input$basal_ganglia_possible_right, input$basal_ganglia_possible_left),
         summarize_region("thalamus", input$thalamus_definite_right, input$thalamus_definite_left, input$thalamus_possible_right, input$thalamus_possible_left),
-        summarize_region("internal capsule", input$internal_capsule_definite_right, input$internal_capsule_definite_left, input$internal_capsule_possible_right, input$internal_capsule_possible_left)
+        summarize_region("internal capsule", input$internal_capsule_definite_right, input$internal_capsule_definite_left, input$internal_capsule_possible_right, input$internal_capsule_possible_left),
+        summarize_region("external capsule", input$external_capsule_definite_right, input$external_capsule_definite_left, input$external_capsule_possible_right, input$external_capsule_possible_left),
+        summarize_region("corpus callosum", input$corpus_callosum_definite_right, input$corpus_callosum_definite_left, input$corpus_callosum_possible_right, input$corpus_callosum_possible_left),
+        summarize_region("deep and periventricular white matter", input$deep_pvwhite_definite_right, input$deep_pvwhite_definite_left, input$deep_pvwhite_possible_right, input$deep_pvwhite_possible_left)
       )
       
       lobar <- c(
@@ -3170,6 +3201,17 @@ server <- function(input, output, session) {
       mta_left <- as.numeric(substr(input$mta_left_report, 1, 1))
       mta_right <- as.numeric(substr(input$mta_right_report, 1, 1))
       
+      # Age not provided: report the scores with both age cut-offs
+      if (is.null(age) || length(age) == 0 || is.na(age) || age <= 0) {
+        scores <- if (mta_left == mta_right) {
+          paste0("bilateral = ", mta_left)
+        } else {
+          paste0("left = ", mta_left, " and right = ", mta_right)
+        }
+        return(paste0("Medial Temporal Atrophy (MTA) score: ", scores,
+                      "; age not provided (abnormal if ≥2 under 75 years, or ≥3 from 75 years)."))
+      }
+      
       # Define abnormality thresholds
       abnormal_threshold <- ifelse(age < 75, 2, 3)
       
@@ -3294,28 +3336,7 @@ server <- function(input, output, session) {
   })
   
   cerebral_microbleeds_score <- reactive({
-    total_microbleeds <- sum(
-      input$brainstem_definite_right, input$brainstem_definite_left,
-      input$brainstem_possible_right, input$brainstem_possible_left,
-      input$cerebellum_definite_right, input$cerebellum_definite_left,
-      input$cerebellum_possible_right, input$cerebellum_possible_left,
-      input$basal_ganglia_definite_right, input$basal_ganglia_definite_left,
-      input$basal_ganglia_possible_right, input$basal_ganglia_possible_left,
-      input$thalamus_definite_right, input$thalamus_definite_left,
-      input$thalamus_possible_right, input$thalamus_possible_left,
-      input$internal_capsule_definite_right, input$internal_capsule_definite_left,
-      input$internal_capsule_possible_right, input$internal_capsule_possible_left,
-      input$frontal_definite_right, input$frontal_definite_left,
-      input$frontal_possible_right, input$frontal_possible_left,
-      input$parietal_definite_right, input$parietal_definite_left,
-      input$parietal_possible_right, input$parietal_possible_left,
-      input$temporal_definite_right, input$temporal_definite_left,
-      input$temporal_possible_right, input$temporal_possible_left,
-      input$occipital_definite_right, input$occipital_definite_left,
-      input$occipital_possible_right, input$occipital_possible_left,
-      input$insula_definite_right, input$insula_definite_left,
-      input$insula_possible_right, input$insula_possible_left
-    )
+    total_microbleeds <- mb_total()
     
     if (total_microbleeds > 0) {
       return(1)  # 1 point if any microbleeds are present
@@ -3685,34 +3706,15 @@ server <- function(input, output, session) {
   mb_report_text_pt <- reactive({
     if (input$mb_switch) {
       
-      total_microbleeds <- sum(
-        input$brainstem_definite_right, input$brainstem_definite_left,
-        input$brainstem_possible_right, input$brainstem_possible_left,
-        input$cerebellum_definite_right, input$cerebellum_definite_left,
-        input$cerebellum_possible_right, input$cerebellum_possible_left,
-        input$basal_ganglia_definite_right, input$basal_ganglia_definite_left,
-        input$basal_ganglia_possible_right, input$basal_ganglia_possible_left,
-        input$thalamus_definite_right, input$thalamus_definite_left,
-        input$thalamus_possible_right, input$thalamus_possible_left,
-        input$internal_capsule_definite_right, input$internal_capsule_definite_left,
-        input$internal_capsule_possible_right, input$internal_capsule_possible_left,
-        input$frontal_definite_right, input$frontal_definite_left,
-        input$frontal_possible_right, input$frontal_possible_left,
-        input$parietal_definite_right, input$parietal_definite_left,
-        input$parietal_possible_right, input$parietal_possible_left,
-        input$temporal_definite_right, input$temporal_definite_left,
-        input$temporal_possible_right, input$temporal_possible_left,
-        input$occipital_definite_right, input$occipital_definite_left,
-        input$occipital_possible_right, input$occipital_possible_left,
-        input$insula_definite_right, input$insula_definite_left,
-        input$insula_possible_right, input$insula_possible_left
-      )
+      total_microbleeds <- mb_total()
       
       if (total_microbleeds == 0) {
         return("Sem microhemorragias parenquimatosas.")
       }
       
       summarize_region <- function(region, definite_right, definite_left, possible_right, possible_left) {
+        definite_right <- mb0(definite_right); definite_left <- mb0(definite_left)
+        possible_right <- mb0(possible_right); possible_left <- mb0(possible_left)
         entries <- c()
         if (definite_right > 0 || definite_left > 0) {
           definite_list <- c()
@@ -3748,7 +3750,10 @@ server <- function(input, output, session) {
       deep <- c(
         summarize_region("gânglios da base", input$basal_ganglia_definite_right, input$basal_ganglia_definite_left, input$basal_ganglia_possible_right, input$basal_ganglia_possible_left),
         summarize_region("tálamo", input$thalamus_definite_right, input$thalamus_definite_left, input$thalamus_possible_right, input$thalamus_possible_left),
-        summarize_region("cápsula interna", input$internal_capsule_definite_right, input$internal_capsule_definite_left, input$internal_capsule_possible_right, input$internal_capsule_possible_left)
+        summarize_region("cápsula interna", input$internal_capsule_definite_right, input$internal_capsule_definite_left, input$internal_capsule_possible_right, input$internal_capsule_possible_left),
+        summarize_region("cápsula externa", input$external_capsule_definite_right, input$external_capsule_definite_left, input$external_capsule_possible_right, input$external_capsule_possible_left),
+        summarize_region("corpo caloso", input$corpus_callosum_definite_right, input$corpus_callosum_definite_left, input$corpus_callosum_possible_right, input$corpus_callosum_possible_left),
+        summarize_region("substância branca profunda e periventricular", input$deep_pvwhite_definite_right, input$deep_pvwhite_definite_left, input$deep_pvwhite_possible_right, input$deep_pvwhite_possible_left)
       )
       
       lobar <- c(
@@ -3979,6 +3984,17 @@ server <- function(input, output, session) {
       
       mta_esquerda <- as.numeric(substr(input$mta_left_report, 1, 1))
       mta_direita <- as.numeric(substr(input$mta_right_report, 1, 1))
+      
+      # Idade não indicada: indicar os scores com os dois limiares de idade
+      if (is.null(idade) || length(idade) == 0 || is.na(idade) || idade <= 0) {
+        valores <- if (mta_esquerda == mta_direita) {
+          paste0("bilateral = ", mta_esquerda)
+        } else {
+          paste0("esquerdo = ", mta_esquerda, " e direito = ", mta_direita)
+        }
+        return(paste0("Medial Temporal Atrophy (MTA): ", valores,
+                      "; idade não indicada (alterado se ≥2 abaixo dos 75 anos, ou ≥3 a partir dos 75 anos)."))
+      }
       
       limiar_anormal <- ifelse(idade < 75, 2, 3)
       
