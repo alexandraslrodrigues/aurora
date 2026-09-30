@@ -3,6 +3,323 @@ library(shiny)
 library(bslib)
 library(writexl)
 
+# MOVEMENT CALCULATOR: published cutoffs ---------------------------------------
+# One row per published cutoff. primary = TRUE marks the reference cutoff
+# (original paper) shown first; the others are listed under "All published cutoffs".
+# To update the literature, edit this table only.
+movement_cutoffs <- data.frame(
+  index = c("mrpi", "mrpi", "mrpi", "mrpi", "mrpi", "mrpi", "mrpi",
+            "mrpi2", "mrpi2", "mrpi2",
+            "mpa", "mpa", "mpa",
+            "mida",
+            "md", "md",
+            "mdpd", "mdpd",
+            "mcp", "mcp"),
+  op = c(">=", ">=", ">", ">", "<", "<", "<",
+         ">=", ">=", ">",
+         "<", "<", "<",
+         "<",
+         "<", "<",
+         "<", "<",
+         "<=", "<"),
+  value = c(13.55, 12.85, 15.62, 13.6, 11.14, 12.9, 12.3,
+            2.18, 2.50, 2.5,
+            0.18, 0.21, 0.22,
+            98.1,
+            9.35, 8.9,
+            0.52, 0.54,
+            8.0, 8.0),
+  favours = c("PSP", "PSP", "PSP", "PSP", "MSA", "MSA-P", "MSA-C",
+              "PSP-P", "PSP-RS", "PSP",
+              "PSP", "PSP", "PSP",
+              "PSP",
+              "PSP", "PSP",
+              "PSP", "PSP",
+              "MSA", "MSA"),
+  group = c("psp_pd", "psp_msap", "psp_pd", "psp_pd", "msa", "msa", "msa",
+            "psp_pd", "psp_rs", "psp_pd",
+            "psp", "psp", "psp",
+            "psp",
+            "psp", "psp",
+            "psp", "psp",
+            "msa", "msa"),
+  versus = c("vs PD", "vs MSA-P", "vs non-PSP", "", "vs non-MSA", "", "",
+             "vs PD", "vs PD", "vs PD",
+             "vs non-PSP", "", "",
+             "vs non-PSP",
+             "vs MSA", "vs non-PSP",
+             "vs MSA", "vs non-PSP",
+             "vs PD", "vs non-MSA"),
+  source = c("Quattrone 2008", "Quattrone 2008", "Mangesius 2018", "Chougar 2024 (reading grid)",
+             "Mangesius 2018", "Chougar 2024 (reading grid)", "Chougar 2024 (reading grid)",
+             "Quattrone 2018", "Quattrone 2018", "Chougar 2024 (reading grid)",
+             "Mangesius 2018", "Peralta 2022 (MDS Neuroimaging Study Group)", "Chougar 2024 (reading grid)",
+             "Mangesius 2018",
+             "Massey 2013", "Mangesius 2018",
+             "Massey 2013", "Mangesius 2018",
+             "Nicoletti 2006", "Mangesius 2018"),
+  note = c("1.5 T; sensitivity and specificity 100% in the original cohort", "1.5 T", "1.5 T", "",
+           "1.5 T", "", "",
+           "Sensitivity 100%, specificity 94.3%", "", "",
+           "1.5 T; whole midbrain", "0.22 in the paper's Fig 1", "",
+           "1.5 T",
+           "Autopsy-confirmed PSP vs MSA; sensitivity 83%, specificity 100%", "1.5 T",
+           "Autopsy-confirmed PSP vs MSA; sensitivity 67%, specificity 100%", "1.5 T",
+           "1.5 T; mean MSA 6.1 mm vs PD 9.3 mm", "1.5 T"),
+  # tested = cutoff derived and tested in the study (ROC analysis). FALSE for values quoted
+  # from other studies or given as expected values (Chougar reading grid, Peralta review):
+  # they are shown for information but do not drive the "Favours" label.
+  tested = !grepl("reading grid|Peralta", c("Quattrone 2008", "Quattrone 2008", "Mangesius 2018", "Chougar 2024 (reading grid)",
+             "Mangesius 2018", "Chougar 2024 (reading grid)", "Chougar 2024 (reading grid)",
+             "Quattrone 2018", "Quattrone 2018", "Chougar 2024 (reading grid)",
+             "Mangesius 2018", "Peralta 2022 (MDS Neuroimaging Study Group)", "Chougar 2024 (reading grid)",
+             "Mangesius 2018",
+             "Massey 2013", "Mangesius 2018",
+             "Massey 2013", "Mangesius 2018",
+             "Nicoletti 2006", "Mangesius 2018")),
+  primary = c(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
+              TRUE, FALSE, FALSE,
+              TRUE, FALSE, FALSE,
+              TRUE,
+              TRUE, FALSE,
+              TRUE, FALSE,
+              TRUE, FALSE),
+  stringsAsFactors = FALSE
+)
+
+# DOI for each source (used to link the references in the calculator)
+movement_dois <- c(
+  "Quattrone 2008" = "10.1148/radiol.2453061703",
+  "Quattrone 2018" = "10.1016/j.parkreldis.2018.07.016",
+  "Mangesius 2018" = "10.1016/j.parkreldis.2017.10.020",
+  "Chougar 2024"   = "10.1002/mds.29760",
+  "Peralta 2022"   = "10.1002/mdc3.13354",
+  "Massey 2013"    = "10.1212/WNL.0b013e318292a2d2",
+  "Nicoletti 2006" = "10.1148/radiol.2393050459",
+  "Whitwell 2017"  = "10.1002/mds.27038",
+  "Oba 2005"       = "10.1212/01.WNL.0000165960.04422.D0"
+)
+
+# Source name as a link to its DOI (key = first two words, e.g. "Chougar 2024")
+movement_source_link <- function(src) {
+  key <- paste(strsplit(src, " ")[[1]][1:2], collapse = " ")
+  doi <- movement_dois[key]
+  if (is.na(doi)) return(src)
+  as.character(tags$a(key, href = paste0("https://doi.org/", doi), target = "_blank", rel = "noopener",
+                      style = "color: #553356;"))
+}
+
+movement_index_info <- list(
+  mrpi  = list(name = "MRPI", formula = "(pons area / midbrain area) × (MCP width / SCP width)", digits = 2, unit = "", marker = "PSP",
+               about = "A PSP marker: it rises with atrophy of the midbrain and superior cerebellar peduncles. Values above the cutoff are associated with PSP. Low values are found in PD and controls, and even lower values in MSA (pontine and middle cerebellar peduncle atrophy), with overlap between them.",
+               low = list(op = "<", value = 11.14, source = "Mangesius 2018",
+                          label = "Low MRPI",
+                          text = "Nonspecific: overlaps with PD and controls; check the middle cerebellar peduncle width")),
+  mrpi2 = list(name = "MRPI 2.0", formula = "MRPI × (third ventricle width / frontal horns width)", digits = 2, unit = "", marker = "PSP",
+               about = "A PSP marker that adds third ventricle enlargement to the MRPI. Designed to separate PSP-P from PD. It has not been studied in MSA."),
+  mpa   = list(name = "Midbrain/pons area ratio", formula = "midbrain area / pons area", digits = 3, unit = "", marker = "PSP",
+               about = "A PSP marker: it falls when the midbrain is atrophic relative to the pons. Values below the cutoff are associated with PSP."),
+  mida  = list(name = "Midbrain area", formula = "midsagittal", digits = 1, unit = " mm²", marker = "PSP",
+               about = "A PSP marker: a small midbrain area indicates midbrain atrophy."),
+  md    = list(name = "Midbrain anteroposterior diameter", formula = "midsagittal", digits = 1, unit = " mm", marker = "PSP",
+               about = "A PSP marker: a short midbrain diameter indicates midbrain atrophy."),
+  mdpd  = list(name = "Midbrain/pons diameter ratio", formula = "midbrain diameter / pons diameter", digits = 2, unit = "", marker = "PSP",
+               about = "A PSP marker: it falls when the midbrain is atrophic relative to the pons."),
+  mcp   = list(name = "Middle cerebellar peduncle width", formula = "middle cerebellar peduncle", digits = 1, unit = " mm", marker = "MSA",
+               about = "An MSA marker: narrowing indicates middle cerebellar peduncle atrophy, an MRI marker in the MDS 2022 MSA criteria; the criteria use visual assessment and do not specify the quantitative cutoff used here.")
+)
+
+# Typical values in the reference groups of the original papers, so the user can
+# see where a value sits (Quattrone 2008 reports medians; the others report means)
+movement_typical <- list(
+  mrpi  = list(vals = c("PSP" = 19.42, "PD" = 9.40, "MSA-P" = 6.53, "controls" = 9.21), stat = "median", src = "Quattrone 2008"),
+  mrpi2 = list(vals = c("PSP-RS" = 5.23, "PSP-P" = 3.68, "PD" = 1.58, "controls" = 1.51), stat = "mean", src = "Quattrone 2018"),
+  mpa   = list(vals = c("PSP" = 0.16, "PD" = 0.21, "MSA" = 0.27), stat = "mean", src = "Mangesius 2018"),
+  mida  = list(vals = c("PSP" = 80.8, "PD" = 116.1, "MSA" = 107.7), stat = "mean", src = "Mangesius 2018"),
+  md    = list(vals = c("PSP" = 7.8, "PD" = 10.2, "MSA" = 9.8), stat = "mean", src = "Mangesius 2018"),
+  mdpd  = list(vals = c("PSP" = 0.47, "PD" = 0.60, "MSA" = 0.69), stat = "mean", src = "Mangesius 2018"),
+  mcp   = list(vals = c("MSA" = 6.1, "PD" = 9.3, "controls" = 9.8), stat = "mean", src = "Nicoletti 2006")
+)
+
+# Plausible ranges for each measurement, wider than the ranges reported in the
+# published cohorts (Quattrone 2008 and 2018, Mangesius 2018, Nicoletti 2006).
+# A value outside them is flagged as a probable measurement or typing error.
+movement_plausible <- list(
+  input_midbrain_singlecalc = list(label = "Midbrain area", min = 30, max = 180, unit = " mm\u00b2"),
+  input_pons                = list(label = "Pons area", min = 250, max = 800, unit = " mm\u00b2"),
+  input_scp_singlecalc      = list(label = "Superior cerebellar peduncle width", min = 1, max = 6, unit = " mm"),
+  input_mcp_singlecalc      = list(label = "Middle cerebellar peduncle width", min = 3, max = 15, unit = " mm"),
+  input_v3_singlecalc       = list(label = "Third ventricle width (mean)", min = 1, max = 20, unit = " mm"),
+  input_fh_singlecalc       = list(label = "Frontal horns width", min = 20, max = 60, unit = " mm"),
+  input_md_singlecalc       = list(label = "Midbrain AP diameter", min = 5, max = 14, unit = " mm"),
+  input_pd_singlecalc       = list(label = "Pons AP diameter", min = 10, max = 25, unit = " mm")
+)
+
+# Inputs used by each index
+movement_inputs_for <- list(
+  mpa   = c("input_midbrain_singlecalc", "input_pons"),
+  mrpi  = c("input_midbrain_singlecalc", "input_pons", "input_scp_singlecalc", "input_mcp_singlecalc"),
+  mrpi2 = c("input_midbrain_singlecalc", "input_pons", "input_scp_singlecalc", "input_mcp_singlecalc",
+            "input_v3_singlecalc", "input_fh_singlecalc"),
+  mdpd  = c("input_md_singlecalc", "input_pd_singlecalc"),
+  mcp   = c("input_mcp_singlecalc")
+)
+
+# "PSP" + "vs PD and MSA" -> "PSP over PD and MSA"
+movement_favours_text <- function(favours, versus) {
+  if (nchar(versus) == 0) return(favours)
+  paste(favours, versus)
+}
+
+movement_meets <- function(x, op, v) {
+  switch(op, ">=" = x >= v, ">" = x > v, "<" = x < v, "<=" = x <= v)
+}
+movement_op_label <- function(op) {
+  vapply(op, function(o) switch(o, ">=" = "≥", ">" = ">", "<" = "<", "<=" = "≤"), character(1), USE.NAMES = FALSE)
+}
+movement_cut_label <- function(cuts, unit = "") {
+  paste0(trimws(paste(cuts$favours, cuts$versus)), " (", movement_op_label(cuts$op), " ", cuts$value, unit, "; ", cuts$source, ")")
+}
+movement_pill <- function(text, bg, fg) {
+  tags$span(text, style = sprintf(
+    "display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;background:%s;color:%s;margin-left:8px;",
+    bg, fg))
+}
+
+# Assess one index against all its published cutoffs.
+movement_assess <- function(key, x) {
+  info <- movement_index_info[[key]]
+  cuts <- movement_cutoffs[movement_cutoffs$index == key, , drop = FALSE]
+  cuts$met <- mapply(movement_meets, x, cuts$op, cuts$value)
+  prim <- cuts[cuts$primary, , drop = FALSE][1, ]
+  family <- substr(cuts$favours, 1, 3)
+  same <- cuts[cuts$group == prim$group, , drop = FALSE]
+  other_met <- cuts[cuts$group != prim$group & cuts$met &
+                      !(prim$met & family == substr(prim$favours, 1, 3)), , drop = FALSE]
+  u <- info$unit
+  value_txt <- paste0(formatC(x, format = "f", digits = info$digits), info$unit)
+
+  main <- paste0(if (prim$met) "Meets" else "Does not meet",
+                 " the reference cutoff for ", movement_cut_label(prim, u), ".")
+  disagree <- NULL
+  opp <- same[!same$primary & same$met != prim$met, , drop = FALSE]
+  if (nrow(opp) > 0) {
+    disagree <- paste0("Other studies disagree: this value ",
+                       if (prim$met) "would not meet" else "would meet",
+                       " the cutoff of ",
+                       paste0(opp$source, " (", movement_op_label(opp$op), " ", opp$value, u, ")", collapse = " and "),
+                       ".")
+  }
+  other <- if (nrow(other_met) > 0) {
+    paste0("Also meets the cutoff for ", movement_cut_label(other_met, u), ".")
+  } else character(0)
+
+  summary <- paste0(info$name, " ", value_txt, ": ",
+                    if (prim$met) "meets" else "does not meet",
+                    " the cutoff for ", movement_cut_label(prim, u),
+                    if (!is.null(disagree)) "; other published cutoffs disagree at this value" else "",
+                    ".",
+                    if (length(other)) paste0(" ", paste(other, collapse = " ")) else "")
+
+  # The label follows the reference cutoff only: each index is a marker of one disease
+  low_met <- !is.null(info$low) && !prim$met && movement_meets(x, info$low$op, info$low$value)
+  verdict <- paste(if (prim$met) "Meets" else "Does not meet", info$marker, "cutoff")
+  verdict_family <- if (prim$met) info$marker else NA_character_
+  list(key = key, info = info, value_txt = value_txt, cuts = cuts, prim = prim, opp = opp, other_met = other_met,
+       verdict = verdict, verdict_met = !is.na(verdict_family), verdict_family = verdict_family, low_met = low_met,
+       main = main, disagree = disagree, other = other, summary = summary)
+}
+
+# Third ventricle: Quattrone 2018 averaged three measurements (anterior, middle and
+# posterior third ventricle, axial slice at the level of the AC and PC)
+movement_input_v3 <- function(info_id) {
+  small <- function(id, lab) tags$div(style = "width: 86px;",
+    numericInput(id, tags$span(style = "font-weight: 400; font-size: 0.85em;", lab), value = NA, min = 0, max = 100, step = 0.1))
+  fluidRow(
+    tags$div(style = "width: 300px;",
+      tags$label(class = "control-label", "Width of the third ventricle V3 (mm), 3 measurements"),
+      tags$div(style = "display: flex; gap: 8px;",
+               small("input_v3a_singlecalc", "Anterior"),
+               small("input_v3b_singlecalc", "Middle"),
+               small("input_v3c_singlecalc", "Posterior")),
+      uiOutput("v3_mean_singlecalc")),
+    actionButton(info_id, label = NULL, width = 60, icon = icon("circle-info"),
+                 style = "border: none; background-color: transparent; box-shadow: none;")
+  )
+}
+
+# How to measure: text shown with each example image (methods of the original papers)
+movement_howto <- list(
+  "area_mes_pon.webp" = list(
+    title = "Midbrain and pons areas",
+    steps = c("Midsagittal T1-weighted image.",
+              "Line A: through the superior pontine notch and the inferior edge of the quadrigeminal plate.",
+              "Line B: parallel to line A, through the inferior pontine notch.",
+              "Midbrain area: traced around line A and the midbrain tegmentum above it.",
+              "Pons area: between lines A and B, along the anterior and posterior margins of the pons."),
+    method = c("Quattrone 2008", "Oba 2005")),
+  "picture_scp.webp" = list(
+    title = "Superior cerebellar peduncle (SCP) width",
+    steps = c("Oblique coronal T1-weighted images, reformatted from a slab tangent to the floor of the fourth ventricle (red line).",
+              "Starting view: the first image, moving anteroposteriorly, where the inferior colliculi and the SCPs are separated.",
+              "Measure the distance between the medial and lateral borders of each SCP at the middle of its extension, on 3 consecutive sections.",
+              "Enter the mean of both SCPs."),
+    method = c("Quattrone 2008")),
+  "picture_mcp.webp" = list(
+    title = "Middle cerebellar peduncle (MCP) width",
+    steps = c("Parasagittal T1-weighted image that best shows the MCP between the pons and the cerebellum.",
+              "Measure the distance between the superior and inferior borders of the MCP, delimited by the cerebrospinal fluid of the pontocerebellar cisterns.",
+              "Measure left and right, and enter the mean."),
+    method = c("Quattrone 2008", "Nicoletti 2006")),
+  "picture_3v.webp" = list(
+    title = "Third ventricle width",
+    steps = c("Axial T1-weighted image at the level of the anterior and posterior commissures.",
+              "Measure the maximum distance between the lateral borders of the third ventricle at its anterior, middle and posterior parts.",
+              "Enter the 3 measurements; Aurora uses their mean."),
+    method = c("Quattrone 2018")),
+  "picture_fh.webp" = list(
+    title = "Frontal horns width",
+    steps = c("Axial T1-weighted image showing the maximal dilatation of the frontal horns.",
+              "Measure the largest left-to-right width of the frontal horns."),
+    method = c("Quattrone 2018"))
+)
+
+# Abbreviations: listed under each result when they appear in it
+movement_abbr <- c(
+  "PSP"    = "progressive supranuclear palsy",
+  "PSP-RS" = "progressive supranuclear palsy\u2013Richardson syndrome",
+  "PSP-P"  = "progressive supranuclear palsy\u2013parkinsonism",
+  "PD"     = "Parkinson\u2019s disease",
+  "MSA"    = "multiple system atrophy",
+  "MSA-P"  = "multiple system atrophy\u2013parkinsonian type",
+  "MSA-C"  = "multiple system atrophy\u2013cerebellar type",
+  "MCP"    = "middle cerebellar peduncle",
+  "SCP"    = "superior cerebellar peduncle",
+  "MDS"    = "International Parkinson and Movement Disorder Society",
+  "MRI"    = "magnetic resonance imaging",
+  "T"      = "tesla"
+)
+movement_abbr_line <- function(txt, exclude = character(0)) {
+  txt <- paste(txt, collapse = " ")
+  found <- vapply(names(movement_abbr), function(a) {
+    pat <- if (a == "T") "\\d T\\b" else paste0("(?<![A-Za-z0-9-])", gsub("-", "\\\\-", a), "(?![A-Za-z])(?!-[A-Z])")
+    grepl(pat, txt, perl = TRUE)
+  }, logical(1))
+  found[names(movement_abbr) %in% exclude] <- FALSE
+  if (!any(found)) return(NULL)
+  out <- paste0(names(movement_abbr)[found], ", ", movement_abbr[found], collapse = "; ")
+  attr(out, "abbr") <- names(movement_abbr)[found]
+  out
+}
+
+movement_input <- function(id, label, info_id) {
+  fluidRow(
+    numericInput(id, label, value = NA, min = 0, max = 1000, step = 0.1),
+    actionButton(info_id, label = NULL, width = 60, icon = icon("circle-info"),
+                 style = "border: none; background-color: transparent; box-shadow: none;")
+  )
+}
+
 # INTERFACE ---------------------------------------------------------------------
 ## INTRO -------------------------------------------------
 # Define UI for application that draws a histogram
@@ -2005,117 +2322,59 @@ $(document).on('click', 'a.shiny-download-link', function(e){
     
   ),
   
-  ## Movement Calculator -----   
-  
+  ## Movement Calculator -----
+
   nav_panel_hidden(
     "Movement Calculator",
-    
+
     page_fluid(
       fluidRow(
         column(6,
+               movement_input("input_midbrain_singlecalc", "Midbrain surface area (mm²)", "show_image_area_mes_pon_singlecalc"),
+               movement_input("input_pons", "Pons surface area (mm²)", "show_image_area_mes_pon2_singlecalc"),
+               movement_input("input_scp_singlecalc", "Width of superior cerebellar peduncles (mm)", "show_image_scp_singlecalc"),
+               movement_input("input_mcp_singlecalc", "Width of middle cerebellar peduncles (mm)", "show_image_mcp_singlecalc"),
+               movement_input_v3("show_image_v3_singlecalc"),
+               movement_input("input_fh_singlecalc", "Width of the frontal horn (mm)", "show_image_fh_singlecalc"),
+               movement_input("input_md_singlecalc", "Midbrain anteroposterior (AP) diameter (mm)", "show_help_md_singlecalc"),
+               movement_input("input_pd_singlecalc", "Pons AP diameter (mm)", "show_help_pd_singlecalc"),
+
                fluidRow(
-                 numericInput(
-                   "input_midbrain_singlecalc",
-                   "Midbrain surface area (mm²)",
-                   value = 0,
-                   min = 0,
-                   max = 1000,
-                   step = 0.1
-                 ),
-                 actionButton("show_image_area_mes_pon_singlecalc", label = NULL, width = 60, icon = icon("circle-info"), style = "border: none; background-color: transparent; box-shadow: none;"),
-               ),
-               
-               
-               fluidRow(
-                 numericInput(
-                   "input_pons",
-                   "Pons surface area (mm²)",
-                   value = 0,
-                   min = 0,
-                   max = 1000,
-                   step = 0.1
-                 ),
-                 actionButton("show_image_area_mes_pon_singlecalc", label = NULL, width = 60, icon = icon("circle-info"), style = "border: none; background-color: transparent; box-shadow: none;"),
-               ),
-               
-               fluidRow(
-                 numericInput(
-                   "input_scp_singlecalc",
-                   "Width of superior cerebellar peduncles (mm)",
-                   value = 0,
-                   min = 0,
-                   max = 1000,
-                   step = 0.1
-                 ),
-                 actionButton("show_image_scp_singlecalc", label = NULL, width = 60, icon = icon("circle-info"), style = "border: none; background-color: transparent; box-shadow: none;"),
-               ),
-               
-               fluidRow(
-                 numericInput(
-                   "input_mcp_singlecalc",
-                   "Width of middle cerebellar peduncles (mm)",
-                   value = 0,
-                   min = 0,
-                   max = 1000,
-                   step = 0.1
-                 ),
-                 actionButton("show_image_mcp_singlecalc", label = NULL, width = 60, icon = icon("circle-info"), style = "border: none; background-color: transparent; box-shadow: none;"),
-               ),
-               
-               fluidRow(
-                 numericInput(
-                   "input_v3_singlecalc",
-                   "Width of the third ventricle V3 (mm)",
-                   value = 0,
-                   min = 0,
-                   max = 100,
-                   step = 0.1
-                 ),
-                 actionButton("show_image_v3_singlecalc", label = NULL, width = 60, icon = icon("circle-info"), style = "border: none; background-color: transparent; box-shadow: none;"),
-               ),
-               
-               fluidRow(
-                 numericInput(
-                   "input_fh_singlecalc",
-                   "Width of the frontal horn (mm)",
-                   value = 0,
-                   min = 0,
-                   max = 100,
-                   step = 0.1
-                 ),
-                 actionButton("show_image_fh_singlecalc", label = NULL, width = 60, icon = icon("circle-info"), style = "border: none; background-color: transparent; box-shadow: none;"),
-               ),
-               
-               fluidRow(
-                 column(12, 
+                 column(12,
                         fluidRow(
                           actionButton("calculate_midbrain_pons_ratio_singlecalc", "Calculate Midbrain/Pons Ratio"),
                           style = "margin-bottom: 10px;"
                         ),
                         fluidRow(
-                          actionButton("calculate_mrpi_1_singlecalc", "Calculate MRPI"),
+                          actionButton("calculate_mrpi_1_singlecalc", "Calculate MRPI (Magnetic Resonance Parkinsonism Index)"),
                           style = "margin-bottom: 10px;"
                         ),
                         fluidRow(
-                          actionButton("calculate_mrpi_2_singlecalc", "Calculate MRPI 2.0")
+                          actionButton("calculate_mrpi_2_singlecalc", "Calculate MRPI 2.0"),
+                          style = "margin-bottom: 10px;"
+                        ),
+                        fluidRow(
+                          actionButton("calculate_md_pd_singlecalc", "Calculate Midbrain/Pons Diameter Ratio"),
+                          style = "margin-bottom: 10px;"
+                        ),
+                        fluidRow(
+                          actionButton("calculate_mcp_singlecalc", "Assess Middle Cerebellar Peduncle Width")
                         )
                  )
                ),
-               tags$h4(textOutput("calculation_result_singlecalc"))
+               uiOutput("movement_result_singlecalc")
         ),
-        
-        
+
+
         column(6,
-               
-               # imageOutput("help_image_singlecalc")
                uiOutput("help_image_singlecalc")
         )
       )
     )
-    
-    
+
+
   ),
-  
+
   nav_spacer(), # push nav items to the right
   
   
@@ -2154,7 +2413,7 @@ $(document).on('click', 'a.shiny-download-link', function(e){
 The Aurora Report is a structured MRI report currently designed to describe small vessel disease and atrophy. It results from user inputs in selected sections with instructions and example images.</p>
   
   <p><strong>Which calculators are included?</strong><br />
-    Atrophy: GCA, MTA, ERICA and Koedam scales. Movement disorders: Midbrain/Pons ratio, MMRPI and MRPI 2.0.</p>
+    Atrophy: GCA, MTA, ERICA and Koedam scales. Movement disorders: Midbrain/Pons ratio, MRPI and MRPI 2.0.</p>
   
   <p><strong>Can I export my data?</strong><br />
   Yes. You can export all input data to Excel from the Aurora Report tab.</p>
@@ -2478,72 +2737,220 @@ server <- function(input, output, session) {
   
   
   ## Movement calculator single server --------------------
-  
-  # output$help_image_singlecalc <- renderUI({
-  #   tags$img(src = 'area_mes_pon.webp', alt = "area_mes_pon", width = "100%")
-  # })
-  
+
   observeEvent(input$show_image_area_mes_pon_singlecalc, {
     image_movement("area_mes_pon.webp")
   })
-  
+
+  observeEvent(input$show_image_area_mes_pon2_singlecalc, {
+    image_movement("area_mes_pon.webp")
+  })
+
   observeEvent(input$show_image_scp_singlecalc, {
     image_movement("picture_scp.webp")
   })
-  
+
   observeEvent(input$show_image_mcp_singlecalc, {
     image_movement("picture_mcp.webp")
   })
-  
+
   observeEvent(input$show_image_v3_singlecalc, {
     image_movement("picture_3v.webp")
   })
-  
+
   observeEvent(input$show_image_fh_singlecalc, {
     image_movement("picture_fh.webp")
   })
-  
+
+  observeEvent(input$show_help_md_singlecalc, {
+    image_movement("help_diameters")
+  })
+
+  observeEvent(input$show_help_pd_singlecalc, {
+    image_movement("help_diameters")
+  })
+
   output$help_image_singlecalc <- renderUI({
-    req(image_movement()) 
-    tags$img(src = image_movement(), alt = "Dynamic Image", width = "100%")
+    req(image_movement())
+    key <- image_movement()
+    howto_card <- function(title, img, steps, method) {
+      card(
+        card_header(tags$b(title)),
+        card_body(
+          if (!is.null(img)) tags$img(src = img, alt = title, width = "100%"),
+          tags$h6(class = "d-flex align-items-center", style = "margin-top: 8px;",
+                  icon("circle-info", class = "me-2", style = "color: #676971;"), tags$strong("How to measure")),
+          tags$ol(style = "padding-left: 1.2em; margin-bottom: 6px;", lapply(steps, tags$li)),
+          tags$p(style = "font-size: 0.85em; color: #555; margin-bottom: 0;",
+                 HTML(paste0("Method: ", paste(vapply(method, movement_source_link, character(1)), collapse = "; "), ".")))
+        )
+      )
+    }
+    if (key == "help_diameters") {
+      howto_card("Midbrain and pons anteroposterior diameters", NULL,
+                 c("Midsagittal T1-weighted image.",
+                   "Place an elliptical region over the midbrain and another over the pons.",
+                   "Draw the long (oblique superior\u2013inferior) axis of each ellipse, then measure the maximal diameter perpendicular to that axis.",
+                   "Exclude the collicular plate from the midbrain and the tegmentum from the pons."),
+                 "Massey 2013")
+    } else {
+      h <- movement_howto[[key]]
+      if (is.null(h)) tags$img(src = key, alt = "How to measure", width = "100%")
+      else howto_card(h$title, key, h$steps, h$method)
+    }
   })
+
+  movement_positive <- function(x) {
+    if (is.null(x) || length(x) == 0 || is.na(x) || x <= 0) NA_real_ else as.numeric(x)
+  }
+
+  # Third ventricle width = mean of the measurements entered (method uses 3)
+  v3_parts <- reactive({
+    v <- vapply(c("input_v3a_singlecalc", "input_v3b_singlecalc", "input_v3c_singlecalc"),
+                function(id) movement_positive(input[[id]]), numeric(1))
+    v[!is.na(v)]
+  })
+  v3_mean <- reactive(if (length(v3_parts()) > 0) mean(v3_parts()) else NA_real_)
+
+  output$v3_mean_singlecalc <- renderUI({
+    n <- length(v3_parts())
+    req(n > 0)
+    tags$div(style = "font-size: 0.85em; color: #553356; margin: -6px 0 10px;",
+             tags$b(paste0("Mean ", formatC(v3_mean(), format = "f", digits = 1), " mm")),
+             if (n < 3) tags$span(style = "color: #8a5a00;", paste0(" (", n, " of 3; the method uses 3)")))
+  })
+
+  movement_values <- reactive({
+    m   <- movement_positive(input$input_midbrain_singlecalc)
+    p   <- movement_positive(input$input_pons)
+    md  <- movement_positive(input$input_md_singlecalc)
+    pd  <- movement_positive(input$input_pd_singlecalc)
+    scp <- movement_positive(input$input_scp_singlecalc)
+    mcp <- movement_positive(input$input_mcp_singlecalc)
+    v3  <- v3_mean()
+    fh  <- movement_positive(input$input_fh_singlecalc)
+    mrpi <- (p / m) * (mcp / scp)
+    vals <- c(
+      mrpi  = mrpi,
+      mrpi2 = mrpi * (v3 / fh),
+      mpa   = m / p,
+      mida  = m,
+      md    = md,
+      mdpd  = md / pd,
+      mcp   = mcp
+    )
+    vals[is.finite(vals)]
+  })
+
+  # Which calculation was requested last (set by the Calculate buttons)
+  movement_selected <- reactiveVal(NULL)
+  observeEvent(input$calculate_midbrain_pons_ratio_singlecalc, movement_selected("mpa"))
+  observeEvent(input$calculate_mrpi_1_singlecalc, movement_selected("mrpi"))
+  observeEvent(input$calculate_mrpi_2_singlecalc, movement_selected("mrpi2"))
+  observeEvent(input$calculate_md_pd_singlecalc, movement_selected("mdpd"))
+  observeEvent(input$calculate_mcp_singlecalc, movement_selected("mcp"))
   
+  movement_needs <- list(
+    mpa   = "midbrain and pons surface areas",
+    mrpi  = "midbrain and pons surface areas and the widths of the superior and middle cerebellar peduncles",
+    mrpi2 = "the MRPI measurements plus the third ventricle (at least one measurement) and frontal horn widths",
+    mdpd  = "midbrain and pons AP diameters",
+    mcp   = "width of the middle cerebellar peduncles"
+  )
   
-  observeEvent(input$calculate_midbrain_pons_ratio_singlecalc, {
-    output$calculation_result_singlecalc <- renderText({
-      req(input$input_midbrain_singlecalc, input$input_pons)
-      ratio <- input$input_midbrain_singlecalc / input$input_pons
-      if (is.na(ratio) || !is.finite(ratio)) {
-        "Invalid output"
-      } else {
-        paste("Midbrain/Pons Ratio is", round(ratio, 2))
-      }
+  output$movement_result_singlecalc <- renderUI({
+    sel <- movement_selected()
+    req(sel)
+    vals <- movement_values()
+    # the diameter button also reports the midbrain diameter on its own
+    keys <- if (sel == "mdpd") c("md", "mdpd") else sel
+    keys <- keys[keys %in% names(vals)]
+    if (length(keys) == 0) {
+      return(tags$p(style = "margin-top: 12px; color: #8a5a00;",
+                    paste0("Please fill in the ", movement_needs[[sel]], ".")))
+    }
+    res <- lapply(keys, function(k) movement_assess(k, vals[[k]]))
+    
+    blocks <- lapply(res, function(r) {
+      cut_rows <- lapply(seq_len(nrow(r$cuts)), function(i) {
+        cu <- r$cuts[i, ]
+        tags$tr(
+          tags$td(style = "white-space: nowrap;", paste0(movement_op_label(cu$op), " ", cu$value, r$info$unit)),
+          tags$td(movement_favours_text(cu$favours, cu$versus)),
+          tags$td(HTML(movement_source_link(cu$source))),
+          tags$td(paste(c(if (!cu$tested) "Review value, not tested in a cohort", if (nzchar(cu$note)) cu$note), collapse = "; ")),
+          tags$td(style = "white-space: nowrap;", if (cu$met) tags$b(style = "color: #553356;", "met") else "not met")
+        )
+      })
+      # Footnotes: only when something needs saying
+      notes <- character(0)
+      if (isTRUE(r$low_met)) notes <- c(notes, paste0("Below ", r$info$low$value, ", the value reported in MSA (",
+          movement_source_link(r$info$low$source), "), but it overlaps with PD and controls"))
+      if (nrow(r$opp) > 0) notes <- c(notes, paste0(
+          paste0(vapply(r$opp$source, movement_source_link, character(1)), " cutoff (", movement_op_label(r$opp$op), " ", r$opp$value, r$info$unit, ")", collapse = " and "),
+          if (r$prim$met) " not met" else " met"))
+      marks <- if (length(notes) > 0) paste0(" ", paste(seq_along(notes), collapse = ",")) else ""
+      ty <- movement_typical[[r$key]]
+      # one abbreviation list for the whole card, at the end of "More"
+      abbr <- movement_abbr_line(c(r$info$name, r$verdict, r$prim$favours, r$prim$versus, names(ty$vals), notes,
+                                   r$info$about, r$cuts$favours, r$cuts$versus, r$cuts$note))
+      small <- "font-size: 0.8em; color: #676971; margin: 0 0 4px;"
+      tags$div(
+        style = "margin-top: 16px; padding: 14px 16px; background: #f7f3f7; border: 1px solid #dccfdd; border-radius: 10px;",
+        tags$div(style = "font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #676971;",
+                 r$info$name),
+        tags$div(style = "display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; margin: 2px 0 8px;",
+                 tags$span(style = "font-size: 34px; font-weight: 800; line-height: 1.15; color: #553356; font-variant-numeric: tabular-nums;",
+                           r$value_txt),
+                 tags$span(style = paste0("font-size: 15px; font-weight: 700; padding: 4px 12px; border-radius: 999px; ",
+                                          if (r$verdict_met) "background: #553356; color: #ffffff;" else "background: #e6e6e9; color: #444;"),
+                           r$verdict, if (nzchar(marks)) tags$sup(trimws(marks))),
+                 if (isTRUE(r$low_met)) tags$span(style = "font-size: 14px; font-weight: 600; padding: 3px 10px; border-radius: 999px; border: 1px solid #999; color: #444;",
+                                                  r$info$low$label)),
+        tags$div(style = "font-size: 0.95em; margin-bottom: 6px;",
+                 tags$b("Cutoff "), HTML(paste0(movement_op_label(r$prim$op), " ", r$prim$value, r$info$unit,
+                                                " · ", movement_favours_text(r$prim$favours, r$prim$versus),
+                                                " · ", movement_source_link(r$prim$source)))),
+        if (length(notes) > 0) tags$div(style = "font-size: 0.85em; color: #555; margin-bottom: 6px;",
+          lapply(seq_along(notes), function(k) tags$div(HTML(paste0("<sup>", k, "</sup> ", notes[k], "."))))),
+        tags$details(
+          tags$summary(style = "cursor: pointer; color: #676971; font-size: 0.9em;", "More"),
+          tags$p(style = "font-size: 0.85em; color: #444; margin: 6px 0;", r$info$about),
+          tags$p(style = "font-size: 0.85em; color: #444; margin: 0 0 6px;",
+                 tags$b("Group values: "), HTML(paste0(paste0(names(ty$vals), " ", ty$vals, collapse = " · "),
+                                                     " (", ty$stat, ", ", movement_source_link(ty$src), ")."))),
+          tags$table(class = "table table-sm", style = "font-size: 0.85em;",
+                     tags$thead(tags$tr(tags$th("Cutoff"), tags$th("Comparison"), tags$th("Source"), tags$th("Notes"), tags$th("This value"))),
+                     tags$tbody(cut_rows)),
+          tags$div(style = "border-top: 1px solid #dccfdd; padding-top: 8px; margin-top: -6px;",
+            if (r$info$marker == "PSP") tags$p(style = small, HTML(paste0(
+              "Above 80 years, the reliability of published thresholds is uncertain: age-related midbrain atrophy can reduce specificity (",
+              movement_source_link("Chougar 2024"), "). MRPI is less age-dependent than the midbrain/pons ratio (",
+              movement_source_link("Whitwell 2017"), ")."))),
+            tags$p(style = small, "Published cutoffs depend on method, field strength and cohort. They support imaging assessment but are not diagnostic in isolation."),
+            if (!is.null(abbr)) tags$p(style = small, tags$b("Abbreviations: "), paste0(as.character(abbr), "."))
+          )
+        )
+      )
     })
+
+    # 1. Measurements outside the plausible range (only those used by this calculation)
+    out_of_range <- Filter(Negate(is.null), lapply(movement_inputs_for[[sel]], function(id) {
+      v <- if (id == "input_v3_singlecalc") v3_mean() else movement_positive(input[[id]])
+      pr <- movement_plausible[[id]]
+      if (!is.na(v) && (v < pr$min || v > pr$max)) {
+        paste0(pr$label, " ", v, pr$unit, " (usual ", pr$min, "\u2013", pr$max, pr$unit, ")")
+      }
+    }))
+    range_note <- if (length(out_of_range) > 0) {
+      tags$div(style = "margin-top: 14px; padding: 10px 14px; background: #fbf1dc; color: #8a5a00; border-radius: 8px;",
+               tags$b("Check the measurements: "),
+               paste0(paste(out_of_range, collapse = "; "), "."))
+    }
+    
+    tagList(range_note, blocks)
   })
   
-  observeEvent(input$calculate_mrpi_1_singlecalc, {
-    output$calculation_result_singlecalc <- renderText({
-      req(input$input_midbrain_singlecalc, input$input_pons, input$input_scp_singlecalc, input$input_mcp_singlecalc)
-      mrpi <- (input$input_pons / input$input_midbrain_singlecalc) * (input$input_mcp_singlecalc / input$input_scp_singlecalc)
-      if (is.na(mrpi) || !is.finite(mrpi)) {
-        "Invalid output"
-      } else {
-        paste("MRPI is", round(mrpi, 2))
-      }
-    })
-  })
-  
-  observeEvent(input$calculate_mrpi_2_singlecalc, {
-    output$calculation_result_singlecalc <- renderText({
-      req(input$input_midbrain_singlecalc, input$input_pons, input$input_scp_singlecalc, input$input_mcp_singlecalc, input$input_v3_singlecalc, input$input_fh_singlecalc)
-      mrpi2 <- (input$input_pons / input$input_midbrain_singlecalc) * (input$input_mcp_singlecalc / input$input_scp_singlecalc) * (input$input_v3_singlecalc / input$input_fh_singlecalc)
-      if (is.na(mrpi2) || !is.finite(mrpi2)) {
-        "Invalid output"
-      } else {
-        paste("MRPI 2.0 is", round(mrpi2, 2))
-      }
-    })
-  })
   
   
   ## Report buttons -------------------
