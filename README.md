@@ -19,8 +19,8 @@ Aurora is a reporting aid. It is not a certified medical device and does not mak
 
 | Version | What it is | Code |
 |---|---|---|
-| **2.0** (current, Oct 2026) | Plain HTML, CSS and JavaScript. Runs entirely in the browser, works offline and can be installed. Nothing entered leaves the device | this branch (`main`), folder `site/` |
-| Shinylive (Sep–Oct 2026) | The R Shiny app running in the browser (Shinylive/webR) | branch [`aurora2.0`](../../tree/aurora2.0) (folder `web/`) |
+| **2.0** (current) | Plain HTML, CSS and JavaScript. Runs entirely in the browser, works offline and can be installed. Nothing entered leaves the device | `main` (folder `site/`) · release [v2.0](../../releases) |
+| **1.1** | The R Shiny app running in the browser with Shinylive (webR), without a server (Sep–Oct 2026) | branch [`aurora1.1`](../../tree/aurora1.1) (folder `web/`) |
 | **1.0** (as published) | Server version (R Shiny on shinyapps.io), as described in the article | branch [`aurora1.0`](../../tree/aurora1.0) · release [v1.0](../../releases) |
 
 ## Repository

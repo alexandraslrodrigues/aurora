@@ -208,7 +208,11 @@
     document.body.classList.toggle("home-page", !p.length);
     // addresses longer than the pages that exist show "Page not found"
     var depth = { report: 2, protocol: 3, calculators: 3 };
-    if (!p.length) home();
+    if (!p.length) {
+      // the home page keeps a clean address: aurora-report.com instead of aurora-report.com/#/
+      if (location.hash) { try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { /* ignore */ } }
+      home();
+    }
     else if (CATS.indexOf(p[0]) >= 0 && (!p[1] || p.length <= (depth[p[1]] || 2))) category(p[0], p[1], p[2]);
     else if (p[0] === "help" && p.length === 1) textPage("Help", P.help, true);
     else if (p[0] === "about" && p.length === 1) textPage("About", P.about, true);
