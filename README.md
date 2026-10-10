@@ -38,7 +38,6 @@ site/                        the website (this folder is what is published)
   css/aurora.css             colours and layout
   img/  fonts/  icons/
   sw.js, manifest.webmanifest  offline use and installation
-tests/                       checks used when Aurora moved from R to JavaScript (Sep 2026)
 ```
 
 **Edit a sentence, a cutoff or a reference:** open the file in `site/content/`, change the text between quotes
@@ -49,10 +48,6 @@ tests/                       checks used when Aurora moved from R to JavaScript 
 
 **Publish:** upload the `site` folder to the hosting (Cloudflare Pages). If you add or rename files, add them to
 `FILES` in `site/sw.js` and change `VERSION` there.
-
-**Tests:** the scripts in `tests/` compared the JavaScript report, sentence by sentence in English and Portuguese,
-with the R Shiny version (838 cases, 0 differences in Sep 2026). The report has changed on purpose since then, so
-new differences are expected.
 
 ## Privacy
 
