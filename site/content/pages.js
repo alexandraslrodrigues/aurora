@@ -89,7 +89,7 @@ Aurora.content.pages = {
     ["Built on published evidence", "Every scale, cutoff and reference image comes from peer-reviewed literature, with a link to the original source."],
     ["A reporting aid, not a diagnosis", "Aurora is not a certified medical device and does not make diagnoses. Interpretation stays with the radiologist."],
     ["Runs on your device", "Everything works in your browser, and nothing you enter leaves your device."],
-    ["Free and open source", "Aurora is free to use, and its code is available on <a href='https://github.com/alexandraslrodrigues/aurora'>GitHub</a>."]
+    ["Free and openly licensed", "Aurora is free to use, and its code is on <a href='https://github.com/alexandraslrodrigues/aurora'>GitHub</a> (CC BY-NC-SA 4.0)."]
   ],
 
   team: [

@@ -1,0 +1,52 @@
+cff-version: 1.2.0
+message: "If you use Aurora, please cite the article below."
+title: "Aurora: structured neuroradiology reporting and score calculation"
+type: software
+version: "2.0"
+url: "https://aurora-report.com"
+repository-code: "https://github.com/alexandraslrodrigues/aurora"
+license: CC-BY-NC-SA-4.0
+abstract: >-
+  Free, open-access web application for structured brain MRI reporting in
+  cognitive and movement disorders: small vessel disease and atrophy report,
+  visual rating scales (GCA, MTA, ERICA, Koedam), midbrain and pons measurements
+  (MRPI, MRPI 2.0, midbrain/pons ratios, MCP width) and recommended MRI protocols.
+keywords:
+  - neuroradiology
+  - structured reporting
+  - MRI
+  - dementia
+  - parkinsonism
+  - small vessel disease
+authors:
+  - family-names: Rodrigues
+    given-names: Alexandra S. L.
+    orcid: "https://orcid.org/0000-0001-6241-9446"
+  - family-names: Lobo
+    given-names: Gonçalo Gama
+    orcid: "https://orcid.org/0000-0002-7376-9967"
+  - family-names: Machado
+    given-names: Tiago
+    orcid: "https://orcid.org/0000-0001-8930-4382"
+  - family-names: Pereira
+    given-names: Daniela Jardim
+    orcid: "https://orcid.org/0000-0002-9700-810X"
+preferred-citation:
+  type: article
+  title: "Aurora: Open-Access Web Application for Structured Neuroradiology Report and Score Calculation"
+  authors:
+    - family-names: Rodrigues
+      given-names: Alexandra S. L.
+    - family-names: Lobo
+      given-names: Gonçalo Gama
+    - family-names: Machado
+      given-names: Tiago
+    - family-names: Pereira
+      given-names: Daniela Jardim
+  journal: "American Journal of Neuroradiology"
+  volume: 47
+  issue: 2
+  start: 419
+  end: 423
+  year: 2026
+  doi: "10.3174/ajnr.A8940"

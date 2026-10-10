@@ -1,0 +1,22 @@
+# Aurora — https://aurora-report.com
+# Search engines and AI search tools are welcome (Google, Bing, ChatGPT search,
+# Perplexity, Claude): they show Aurora in answers and link to it.
+User-agent: *
+Allow: /
+
+# No AI model training. These crawlers only collect text to train AI models;
+# blocking them does not affect search results or AI answers that cite Aurora.
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: CCBot
+User-agent: Applebot-Extended
+User-agent: Meta-ExternalAgent
+User-agent: Bytespider
+Disallow: /
+
+# Google-Extended is left allowed on purpose: Google uses the same switch for
+# Gemini training AND for citing pages in Gemini answers ("grounding").
+# Blocking it would also remove Aurora from Gemini answers. To block it anyway,
+# add "User-agent: Google-Extended" to the list above.
+
+Sitemap: https://aurora-report.com/sitemap.xml

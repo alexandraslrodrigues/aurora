@@ -826,3 +826,29 @@ dl.ab-grid { margin: 0; }
 
 .modal:has(.fb-form) { width: min(560px, calc(100vw - 24px)); }
 @media (max-width: 560px) { .modal:has(.fb-form) { width: 100vw; } }
+
+/* ---------------------------------------------------------------- search engines
+   .site-summary: text in index.html for search engines and AI tools that do not run JavaScript.
+   The app replaces it as it loads; this rule only stops it flashing on slow connections. */
+.site-summary { display: none; }
+
+/* Reference pages written by tools/build-pages.js (same look as About and Help) */
+.ref-page .ab-head { display: block; max-width: 75ch; }
+.ref-page .ref-open { margin: 24px 0 0; }
+.ref-page .ab-sec > p, .ref-page .ab-sec > ul, .ref-page .ab-sec > ol, .ref-page .ref-body, .ref-page .credits { max-width: 75ch; }
+.ref-page .ab-sec h3 { font-size: 15px; font-weight: 600; margin: 32px 0 8px; }
+.ref-page .ab-sec h2 + h3, .ref-page .ab-sec h2 + .howto h3, .ref-page .ab-sec h2 + .mv-table-wrap { margin-top: 0; }
+.ref-page figure { margin: 16px 0; max-width: 480px; }
+.ref-page figure img { border-radius: 6px; background: #000; }
+.ref-page .howto { margin-top: 28px; }
+.ref-page .howto:first-of-type { margin-top: 0; }
+.ref-page .mv-table { font-size: 14px; }
+.ref-page .mv-table-wrap { margin: 0 0 16px; }
+.ref-page .ref-note { color: var(--muted); font-size: 13px; }
+.ref-page .pr-box { margin-bottom: 12px; }
+.ref-more-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 40px; }
+.ref-more h3 { font-size: 14px; font-weight: 600; margin: 0 0 8px; }
+.ref-more ul { list-style: none; padding: 0; margin: 0; }
+.ref-more li { margin: 0 0 6px; font-size: 14px; }
+.ref-more li span[aria-current] { color: var(--muted); }
+@media (max-width: 720px) { .ref-more-cols { grid-template-columns: 1fr; } }

@@ -3,6 +3,7 @@
   "use strict";
   var A = root.Aurora, ui = A.ui, h = ui.h, P = A.content.pages;
   var app = document.getElementById("app");
+  var HOME_TITLE = document.title;   // the title written in index.html (also what search engines show)
 
   var CATS = ["cognitive", "movement"];
   var TABS = [["report", "Aurora Report"], ["protocol", "Protocol"], ["calculators", "Calculators"]];
@@ -35,7 +36,7 @@
   function page(cls) { var el = h("div", { class: "page " + (cls || "") }); app.appendChild(el); return el; }
 
   function home() {
-    document.title = "Aurora";
+    document.title = HOME_TITLE;
     var logo = h("div", { class: "home-logo" }, h("img", { src: "icons/icon-128.png", alt: "" }), h("span", null, "aurora"));
     var el = h("div", { class: "home" },
       h("div", { class: "home-hero" }, logo, h("p", { class: "tagline" }, P.tagline)),
