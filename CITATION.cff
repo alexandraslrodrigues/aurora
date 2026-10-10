@@ -2,7 +2,8 @@ cff-version: 1.2.0
 message: "If you use Aurora, please cite the article below."
 title: "Aurora: structured neuroradiology reporting and score calculation"
 type: software
-version: "2.0"
+version: "2.0.1"
+doi: "10.5281/zenodo.23285019"
 url: "https://aurora-report.com"
 repository-code: "https://github.com/alexandraslrodrigues/aurora"
 license: CC-BY-NC-SA-4.0

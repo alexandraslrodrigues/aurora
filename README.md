@@ -1,5 +1,7 @@
 # Aurora
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23285019.svg)](https://doi.org/10.5281/zenodo.23285019)
+
 **Clear reports, brighter outcomes.**
 
 Aurora is a free, open-access website for structured neuroradiology reporting in neurodegenerative disorders.
@@ -83,6 +85,8 @@ If you use Aurora, please cite:
 > Rodrigues ASL, Lobo GG, Machado T, Pereira DJ. Aurora: Open-Access Web Application for
 > Structured Neuroradiology Report and Score Calculation. *AJNR Am J Neuroradiol* 2026;47(2):419–423.
 > doi:[10.3174/ajnr.A8940](https://doi.org/10.3174/ajnr.A8940)
+
+To cite the software itself (all versions): Aurora, Zenodo, doi:[10.5281/zenodo.23285019](https://doi.org/10.5281/zenodo.23285019).
 
 ## License
 
