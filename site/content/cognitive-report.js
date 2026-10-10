@@ -362,23 +362,23 @@ Aurora.content.cognitive = {
         thirdValue: "third ventricle: {n}"
       },
       mta: {
-        missingAge:   "Medial Temporal Atrophy (MTA) score: {scores}; age not provided (abnormal if ≥2 under 75 years, or ≥3 from 75 years).",
+        missingAge:   "Medial Temporal Atrophy (MTA) score: {scores}; age not provided (age-adjusted cut-off: ≥2 under 75 years, ≥3 from 75 years).",
         scoresEqual:  "bilateral = {left}",
         scoresDiff:   "left = {left} and right = {right}",
-        bothAbnormalEqual: "Medial Temporal Atrophy (MTA) score: bilateral = {left}; abnormal according to the age-related normative range.",
-        bothAbnormalDiff:  "Medial Temporal Atrophy (MTA) score: left = {left} (abnormal) and right = {right} (abnormal); according to the age-related normative range.",
-        oneAbnormal:  "Medial Temporal Atrophy (MTA) score: {abnSide} = {abnValue} (abnormal) and {normSide} = {normValue} (normal); according to the age-related normative range.",
-        normalEqual:  "Medial Temporal Atrophy (MTA) score: bilateral = {left}; normal according to the age-related normative range.",
-        normalDiff:   "Medial Temporal Atrophy (MTA) score: left = {left} and right = {right}; normal according to the age-related normative range.",
+        bothAbnormalEqual: "Medial Temporal Atrophy (MTA) score: bilateral = {left}; meets the age-adjusted cut-off.",
+        bothAbnormalDiff:  "Medial Temporal Atrophy (MTA) score: left = {left} and right = {right}; both meet the age-adjusted cut-off.",
+        oneAbnormal:  "Medial Temporal Atrophy (MTA) score: {abnSide} = {abnValue} (meets the age-adjusted cut-off) and {normSide} = {normValue} (below the cut-off).",
+        normalEqual:  "Medial Temporal Atrophy (MTA) score: bilateral = {left}; below the age-adjusted cut-off.",
+        normalDiff:   "Medial Temporal Atrophy (MTA) score: left = {left} and right = {right}; below the age-adjusted cut-off.",
         side: { left: "left", right: "right" }
       },
       erica: {
-        bothAbnormalEqual: "Entorhinal Cortical Atrophy (ERICA) score: bilateral = {left} (abnormal); an ERICA score ≥2 may suggest a neurodegenerative condition rather than subjective cognitive decline.",
-        bothAbnormalDiff:  "Entorhinal Cortical Atrophy (ERICA) score: right = {right} (abnormal) and left = {left} (abnormal); an ERICA score ≥2 may suggest a neurodegenerative condition rather than subjective cognitive decline.",
-        oneAbnormal: "Entorhinal Cortical Atrophy (ERICA) score: right = {right} ({rightStatus}) and left = {left} ({leftStatus}); an ERICA score ≥2 may suggest a neurodegenerative condition rather than subjective cognitive decline.",
-        normalEqual: "Entorhinal Cortical Atrophy (ERICA) score: bilateral = {left} (normal); does not support neurodegenerative pathology over subjective cognitive decline.",
-        normalDiff:  "Entorhinal Cortical Atrophy (ERICA) score: right = {right} (normal) and left = {left} (normal); does not support neurodegenerative pathology over subjective cognitive decline.",
-        status: { abnormal: "abnormal", normal: "normal" },
+        bothAbnormalEqual: "Entorhinal Cortical Atrophy (ERICA) score: bilateral = {left}; meets the published cut-off (≥2).",
+        bothAbnormalDiff:  "Entorhinal Cortical Atrophy (ERICA) score: right = {right} and left = {left}; both meet the published cut-off (≥2).",
+        oneAbnormal: "Entorhinal Cortical Atrophy (ERICA) score: right = {right} ({rightStatus}) and left = {left} ({leftStatus}); published cut-off ≥2.",
+        normalEqual: "Entorhinal Cortical Atrophy (ERICA) score: bilateral = {left}; below the published cut-off (≥2).",
+        normalDiff:  "Entorhinal Cortical Atrophy (ERICA) score: right = {right} and left = {left}; below the published cut-off (≥2).",
+        status: { abnormal: "meets the cut-off", normal: "below the cut-off" },
         side: { left: "left", right: "right" }
       },
       koedam: {
@@ -477,23 +477,23 @@ Aurora.content.cognitive = {
         thirdValue: "terceiro ventrículo: {n}"
       },
       mta: {
-        missingAge:   "Medial Temporal Atrophy (MTA): {scores}; idade não indicada (alterado se ≥2 abaixo dos 75 anos, ou ≥3 a partir dos 75 anos).",
+        missingAge:   "Medial Temporal Atrophy (MTA): {scores}; idade não indicada (valor de referência para a idade: ≥2 abaixo dos 75 anos, ≥3 a partir dos 75 anos).",
         scoresEqual:  "bilateral = {left}",
         scoresDiff:   "esquerdo = {left} e direito = {right}",
-        bothAbnormalEqual: "Medial Temporal Atrophy (MTA): bilateral = {left}; alterado face aos valores de referência para a idade.",
-        bothAbnormalDiff:  "Medial Temporal Atrophy (MTA): esquerdo = {left} e direito = {right}; alterados face aos valores de referência para a idade.",
-        oneAbnormal:  "Medial Temporal Atrophy (MTA): {abnSide} = {abnValue} (alterado) e {normSide} = {normValue} (normal), face aos valores de referência para a idade.",
-        normalEqual:  "Medial Temporal Atrophy (MTA): bilateral = {left}; adequado face aos valores de referência para a idade.",
-        normalDiff:   "Medial Temporal Atrophy (MTA): esquerdo = {left} e direito = {right}; adequado face aos valores de referência para a idade.",
+        bothAbnormalEqual: "Medial Temporal Atrophy (MTA): bilateral = {left}; igual ou superior ao valor de referência para a idade.",
+        bothAbnormalDiff:  "Medial Temporal Atrophy (MTA): esquerdo = {left} e direito = {right}; ambos iguais ou superiores ao valor de referência para a idade.",
+        oneAbnormal:  "Medial Temporal Atrophy (MTA): {abnSide} = {abnValue} (igual ou superior) e {normSide} = {normValue} (inferior) face ao valor de referência para a idade.",
+        normalEqual:  "Medial Temporal Atrophy (MTA): bilateral = {left}; inferior ao valor de referência para a idade.",
+        normalDiff:   "Medial Temporal Atrophy (MTA): esquerdo = {left} e direito = {right}; ambos inferiores ao valor de referência para a idade.",
         side: { left: "esquerdo", right: "direito" }
       },
       erica: {
-        bothAbnormalEqual: "Entorhinal Cortical Atrophy (ERICA): bilateral = {left} (alterado); um score ERICA ≥2 pode sugerir patologia neurodegenerativa em detrimento de declínio cognitivo subjetivo.",
-        bothAbnormalDiff:  "Entorhinal Cortical Atrophy (ERICA): direito = {right} (alterado) e esquerdo = {left} (alterado); um score ERICA ≥2 pode sugerir patologia neurodegenerativa em detrimento de declínio cognitivo subjetivo.",
-        oneAbnormal: "Entorhinal Cortical Atrophy (ERICA): direito = {right} ({rightStatus}) e esquerdo = {left} ({leftStatus}); um score ERICA ≥2 pode sugerir patologia neurodegenerativa em detrimento de declínio cognitivo subjetivo.",
-        normalEqual: "Entorhinal Cortical Atrophy (ERICA): bilateral = {left} (normal); não apoia patologia neurodegenerativa em detrimento de declínio cognitivo subjetivo.",
-        normalDiff:  "Entorhinal Cortical Atrophy (ERICA): direito = {right} (normal) e esquerdo = {left} (normal); não apoia patologia neurodegenerativa em detrimento de declínio cognitivo subjetivo.",
-        status: { abnormal: "alterado", normal: "normal" },
+        bothAbnormalEqual: "Entorhinal Cortical Atrophy (ERICA): bilateral = {left}; igual ou superior ao valor de referência (≥2).",
+        bothAbnormalDiff:  "Entorhinal Cortical Atrophy (ERICA): direito = {right} e esquerdo = {left}; ambos iguais ou superiores ao valor de referência (≥2).",
+        oneAbnormal: "Entorhinal Cortical Atrophy (ERICA): direito = {right} ({rightStatus}) e esquerdo = {left} ({leftStatus}) face ao valor de referência (≥2).",
+        normalEqual: "Entorhinal Cortical Atrophy (ERICA): bilateral = {left}; inferior ao valor de referência (≥2).",
+        normalDiff:  "Entorhinal Cortical Atrophy (ERICA): direito = {right} e esquerdo = {left}; ambos inferiores ao valor de referência (≥2).",
+        status: { abnormal: "igual ou superior", normal: "inferior" },
         side: { left: "à esquerda", right: "à direita" }
       },
       koedam: {
@@ -522,14 +522,14 @@ Aurora.content.cognitive = {
     mta: {
       equal: "Medial temporal atrophy (MTA) score = {score} bilaterally.",
       diff:  "Medial temporal atrophy (MTA) score = {high} on the {highSide} and {low} on the {lowSide} side.",
-      interpretationTitle: "MTA interpretation:",
-      interpretation: ["<75 years: ≥2 suggests abnormal findings", "≥75 years: ≥3 suggests abnormal findings"]
+      interpretationTitle: "Published age-adjusted cut-offs (each side):",
+      interpretation: ["Published age-adjusted cut-offs (each side): ≥2 under 75 years; ≥3 from 75 years (Torisson 2015)."]
     },
     erica: {
       equal: "Entorhinal cortical atrophy (ERICA) score = {score} bilaterally.",
       diff:  "Entorhinal cortical atrophy (ERICA) score = {high} on the {highSide} and {low} on the {lowSide} side.",
-      interpretationTitle: "ERICA interpretation:",
-      interpretation: ["≥2 suggests abnormal findings"]
+      interpretationTitle: "Published cut-off (each side):",
+      interpretation: ["Published cut-off (each side): ≥2 (Enkirch 2018)."]
     },
     koedam: {
       equal: "Posterior parietal atrophy (Koedam) score = {score} bilaterally.",

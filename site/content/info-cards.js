@@ -113,7 +113,7 @@ Aurora.content.info = {
       "<li>2: moderate widening of the choroid fissure, mild enlargement of the temporal horn and mild loss of hippocampal height</li>" +
       "<li>3: marked widening of the choroid fissure, moderate enlargement of the temporal horn, and moderate loss of hippocampal height</li>" +
       "<li>4: marked widening of the choroid fissure, marked enlargement of the temporal horn, and the hippocampus is markedly atrophied and internal structure is lost</li></ul>" +
-      "<p>Interpretation (each hemisphere): &lt;75 years, ≥2 suggests abnormal findings; ≥75 years, ≥3 suggests abnormal findings.</p>",
+      "<p>Published age-adjusted cut-offs (each hemisphere): ≥2 under 75 years; ≥3 from 75 years.</p>",
     credits:
       "<p>Figure adapted from: Håkansson, C. et al. (2022). <a href='https://doi.org/10.1007/s00330-021-08177-1'>Inter-modality assessment of medial temporal lobe atrophy in a non-demented population: application of a visual rating scale template across radiologists with varying clinical experience. Eur Radiol, 32, 1127–1134.</a> Licensed under <a href='http://creativecommons.org/licenses/by/4.0/'>CC BY 4.0</a>.</p>" +
       "<p>MTA scale adapted from: Scheltens, P., Leys, D., Barkhof, F. et al. (1992). <a href='https://doi.org/10.1136/jnnp.55.10.967'>Atrophy of medial temporal lobes on MRI in “probable” Alzheimer’s disease and normal ageing: diagnostic value and neuropsychological correlates. Journal of Neurology, Neurosurgery, and Psychiatry, 55(10), 967–972.</a></p>" +
@@ -130,7 +130,7 @@ Aurora.content.info = {
       "<li>1: mild atrophy with widening of the collateral sulcus.</li>" +
       "<li>2: moderate atrophy with detachment of the entorhinal cortex from the cerebellar tentorium (the 'tentorial cleft sign').</li>" +
       "<li>3: pronounced atrophy of the parahippocampal gyrus and a wide cleft between entorhinal cortex and the cerebellar tentorium.</li></ul>" +
-      "<p>Interpretation: ≥2 suggests abnormal findings.</p>",
+      "<p>Published cut-off (each side): ≥2.</p>",
     credits:
       "<p>Figure adapted from: Roberge, X., Brisson, M. &amp; Laforce, R. J. (2023). <a href='https://doi.org/10.1017/cjn.2021.253'>Specificity of Entorhinal Atrophy MRI Scale in Predicting Alzheimer’s Disease Conversion. Canadian Journal of Neurological Sciences, 50, 112–114.</a> Licensed under <a href='http://creativecommons.org/licenses/by/4.0/'>CC BY 4.0</a>.</p>" +
       "<p>Scale adapted from: Enkirch, S. J. et al. (2018). <a href='https://doi.org/10.1148/radiol.2018171888'>The ERICA Score: An MR Imaging–based Visual Scoring System for the Assessment of Entorhinal Cortex Atrophy in Alzheimer Disease. Radiology, 288(1), 226–233.</a></p>"

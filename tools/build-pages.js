@@ -95,7 +95,7 @@ function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").
 function url(p) { return BASE + "/" + (p ? p + "/" : ""); }
 function nb(t) { return String(t).replace(/(\d) (?=(T|mm|ms)\b)/g, "$1 "); }          // "3 T" on one line
 function opLabel(op) { return ME.opLabel(op); }
-function favoursText(f, v) { return v ? f + " " + v.replace(/^vs\s+/, "rather than ") : f; }  // as in the app
+function favoursText(f, v) { return v ? f + " " + v : f; }                                    // "PSP vs PD", as in the app
 function srcLink(src) {                                                                     // "Quattrone 2008" -> link to its DOI
   if (src.indexOf(";") > 0) return src.split(";").map(function (s) { return srcLink(s.trim()); }).join("; ");
   const key = src.split(" ").slice(0, 2).join(" "), doi = MV.dois[key];
@@ -239,7 +239,7 @@ function movementPage(calc, d) {
         "<td class='nw'>" + srcLink(c.source) + "</td></tr>";
     }).join("");
     return (idxs.length > 1 ? "<h3>" + esc(i.name) + "</h3>" : "") +
-      "<div class='mv-table-wrap'><table class='mv-table'><thead><tr><th>Cutoff</th><th>Suggests</th><th>Source</th></tr></thead><tbody>" +
+      "<div class='mv-table-wrap'><table class='mv-table'><thead><tr><th>Cutoff</th><th>Reported for</th><th>Source</th></tr></thead><tbody>" +
       rows + "</tbody></table></div>";
   }).join("");
 

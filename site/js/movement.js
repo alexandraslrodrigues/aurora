@@ -12,7 +12,7 @@
     return false;
   }
   function opLabel(op) { return { ">=": "≥", ">": ">", "<": "<", "<=": "≤" }[op] || op; }
-  function favoursText(f, v) { return v ? f + " " + v.replace(/^vs\s+/, "rather than ") : f; }   // "PSP rather than PD"
+  function favoursText(f, v) { return v ? f + " " + v : f; }   // "PSP vs PD"
   function cutLabel(c, unit) { return (c.favours + " " + c.versus).trim() + " (" + opLabel(c.op) + " " + (c.shown || c.value) + unit + "; " + c.source + ")"; }
   // a cutoff as written in the paper (2.50, 8.0): at least the decimals given in "cutDigits" for the index
   // round half up as on paper (12.95 -> 13.0); toFixed alone gives 12.9 because 12.95 is stored as 12.9499…
@@ -36,7 +36,7 @@
     return {
       key: key, info: info, cuts: cuts, prim: prim, opp: opp, otherMet: otherMet,
       valueTxt: x.toFixed(info.digits) + info.unit,
-      verdict: (prim.met ? "Suggests " : "Does not suggest ") + info.marker,
+      verdict: prim.met ? "Meets the published cutoff" : "Does not meet the published cutoff",
       verdictMet: prim.met
     };
   }
@@ -121,10 +121,10 @@
   function resultBlock(r, measured) {
     var cut = opLabel(r.prim.op) + " " + r.prim.shown + r.info.unit;
     var cmp = favoursText(r.prim.favours, r.prim.versus);
-    // "Suggests PSP (cutoff ≥ 13.55 for PSP rather than PD; Quattrone 2008)."
-    var verdict = (r.verdictMet ? "Suggests " : "Does not suggest ") + r.info.marker;
-    var sentence = [verdict + " (cutoff " + cut + " for " + cmp + "; ", srcLink(r.prim.source), ")."];
-    var copyText = r.info.name + " = " + r.valueTxt.trim() + ". " + verdict + " (cutoff " + cut + " for " + cmp + "; " + r.prim.source + ")." +
+    // "Meets the published cutoff (≥ 13.55 for PSP vs PD; Quattrone 2008)." States the comparison only, no diagnosis.
+    var verdict = r.verdictMet ? "Meets the published cutoff" : "Does not meet the published cutoff";
+    var sentence = [verdict + " (" + cut + " for " + cmp + "; ", srcLink(r.prim.source), ")."];
+    var copyText = r.info.name + " = " + r.valueTxt.trim() + ". " + verdict + " (" + cut + " for " + cmp + "; " + r.prim.source + ")." +
                    (measured ? " " + measured + "." : "");
 
     var notes = [];
@@ -164,7 +164,7 @@
         h("button", { type: "button", class: "btn sm cr-copy", onclick: function () {
           ui.copyText(copyText).then(function (ok) { ui.toast(ok ? "Result copied" : "Copy failed"); });
         } }, "Copy result"),
-        // the dot goes with the value: filled = suggests the disease (as Abnormal in the report)
+        // the dot goes with the value: filled = meets the published cutoff (as Abnormal in the report)
         h("p", { class: "cr-head mv-head" + (r.verdictMet ? " met" : "") }, h("span", { class: "rr-dot", "aria-hidden": "true" }),
           h("span", null, r.info.name + " = ", h("b", null, r.valueTxt)))),
       h("p", { class: "cr-text mv-verdict" }, sentence),
@@ -174,7 +174,7 @@
         h("div", { class: "mv-more-body" },
           h("p", null, withLinks(r.info.about)),
           h("div", { class: "mv-table-wrap" }, h("table", { class: "mv-table" },
-            h("thead", null, h("tr", null, h("th", null, "Cutoff"), h("th", null, "Suggests"), h("th", null, "Source"), h("th", null, "This value"))),
+            h("thead", null, h("tr", null, h("th", null, "Cutoff"), h("th", null, "Reported for"), h("th", null, "Source"), h("th", null, "This value"))),
             h("tbody", null, rows))),
           h("div", { class: "mv-foot" },
             r.info.marker === "PSP" ? h("p", null, withLinks(M().notes.pspAge)) : null,
