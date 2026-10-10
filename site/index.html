@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Aurora</title>
+  <meta name="description" content="Aurora: structured MRI reports and calculators for cognitive and movement disorders.">
+  <meta name="theme-color" content="#ffffff">
+  <script>/* night mode chosen earlier (moon button) */
+    try { if (localStorage.getItem("aurora.theme") === "dark") document.documentElement.setAttribute("data-theme", "dark"); } catch (e) {}
+  </script>
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/aurora.css">
+</head>
+<body>
+  <a class="skip" href="#app">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="#/" aria-label="Aurora home">
+      <img src="icons/icon-128.png" alt="" width="30" height="30">
+      <span class="wordmark">aurora</span>
+    </a>
+    <nav class="mainnav" aria-label="Main">
+      <a href="#/help" data-nav="help">Help</a>
+      <a href="#/about" data-nav="about">About</a>
+      <button type="button" class="icon-btn theme-btn" id="theme-btn" aria-label="Night mode" title="Night mode"></button>
+    </nav>
+  </header>
+
+  <main id="app" tabindex="-1">
+    <noscript><p style="padding:24px">Aurora needs JavaScript to run.</p></noscript>
+  </main>
+
+  <dialog id="modal" class="modal" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <h2 id="modal-title"></h2>
+      <button class="icon-btn" data-close aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Content files (edit these) -->
+  <script src="content/pages.js"></script>
+  <script src="content/cognitive-report.js"></script>
+  <script src="content/info-cards.js"></script>
+  <script src="content/movement-calculator.js"></script>
+  <script src="content/protocols.js"></script>
+  <!-- Code -->
+  <script src="js/ui.js"></script>
+  <script src="js/xlsx.js"></script>
+  <script src="js/cognitive-engine.js"></script>
+  <script src="js/report-page.js"></script>
+  <script src="js/calculators.js"></script>
+  <script src="js/movement.js"></script>
+  <script src="js/live-icon.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
