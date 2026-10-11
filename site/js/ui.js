@@ -52,14 +52,28 @@
     return el;
   }
 
-  // Info card (definition, images, credits) as an element
+  // Abbreviations used in a text (content/info-cards.js, infoAbbreviations), except those already
+  // explained in it, written as "(DWI)": "DWI, diffusion-weighted imaging; FLAIR, …"
+  function abbreviations(text, list) {
+    var found = [];
+    Object.keys(list || {}).forEach(function (a) {
+      if (text.indexOf("(" + a + ")") >= 0) return;
+      var re = new RegExp("(^|[^A-Za-z0-9])" + a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![A-Za-z0-9])");
+      if (re.test(text)) found.push(a + ", " + list[a]);
+    });
+    return found.join("; ");
+  }
+
+  // Info card (definition, images, abbreviations, credits) as an element
   function infoCard(key, opts) {
     var c = Aurora.content.info[key];
     if (!c) return h("div");
+    var abbr = abbreviations((c.title + " " + c.body).replace(/<[^>]+>/g, " "), Aurora.content.infoAbbreviations);
     var box = h("div", { class: "info-content" },
       (opts && opts.title) ? h("h2", null, c.title) : null,
       (c.images || []).map(function (src) { return h("img", { src: "img/" + src, alt: c.title, loading: "lazy" }); }),
       h("div", { html: c.body }),
+      abbr ? h("p", { class: "info-abbr" }, Aurora.t ? Aurora.t("Abbreviations: {list}.", { list: abbr }) : "Abbreviations: " + abbr + ".") : null,
       h("div", { class: "credits", html: c.credits }));
     return externalLinks(box);
   }
@@ -126,7 +140,7 @@
     };
   }
 
-  Aurora.ui = { h: h, seg: seg, infoCard: infoCard, openInfo: openInfo, openModal: openModal, closeModal: closeModal,
+  Aurora.ui = { h: h, seg: seg, infoCard: infoCard, abbreviations: abbreviations, openInfo: openInfo, openModal: openModal, closeModal: closeModal,
                 toast: toast, copyText: copyText, externalLinks: externalLinks,
                 session: store("sessionStorage"), local: store("localStorage") };
 })(window);

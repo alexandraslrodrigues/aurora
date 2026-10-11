@@ -462,10 +462,12 @@
     return cols;
   }
 
-  /* ---------- single calculators (English, as in the Shiny app) ---------- */
+  /* ---------- single calculators (in the language of the site; English by default) ---------- */
   // mark (optional): wraps the scores, so the calculator page can show them in semi-bold
-  function calcGCA(g, mark) {
-    var T = C().calculatorText.gca, TT = C().text.en.gca, vals = gcaValues(g);
+  function calcLang(lang) { var CT = C().calculatorText; return CT[lang] && C().text[lang] ? lang : "en"; }
+  function calcGCA(g, mark, lang) {
+    lang = calcLang(lang);
+    var T = C().calculatorText[lang].gca, TT = C().text[lang].gca, vals = gcaValues(g);
     var total = sum(vals.sulci) + sum(vals.ventricles);
     var sm = gcaSummary(TT, vals.sulci, vals.ventricles);
     mark = mark || String;
@@ -474,13 +476,14 @@
     if (sm.ventricles) out += fill(T.ventricles, { list: sm.ventricles });
     return out.trim();
   }
-  function calcSides(key, right, left, mark) {
-    var T = C().calculatorText[key];
+  function calcSides(key, right, left, mark, lang) {
+    lang = calcLang(lang);
+    var CT = C().calculatorText[lang], T = CT[key];
     right = Number(right); left = Number(left); mark = mark || String;
     if (right === left) return fill(T.equal, { score: mark(right) });
     var rHigh = right > left;
     return fill(T.diff, { high: mark(Math.max(right, left)), low: mark(Math.min(right, left)),
-                          highSide: rHigh ? "right" : "left", lowSide: rHigh ? "left" : "right" });
+                          highSide: rHigh ? CT.side.right : CT.side.left, lowSide: rHigh ? CT.side.left : CT.side.right });
   }
 
   Aurora.engine = {
@@ -499,6 +502,7 @@
     locations: locations,
     excelColumns: excelColumns,
     calcGCA: calcGCA,
-    calcSides: calcSides
+    calcSides: calcSides,
+    calcLang: calcLang
   };
 })(typeof window !== "undefined" ? window : globalThis);

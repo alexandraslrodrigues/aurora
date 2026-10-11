@@ -3,6 +3,9 @@
    -----------------------------------------------------------------------------
    Everything the report SAYS lives here: section names, button labels, the
    values exported to Excel, and every EN / PT sentence.
+   (On screen in Portuguese, the names and button labels come from
+   content/lang-pt.js; the report sentences are the ones below. The report
+   is written in the language of the site.)
 
    How to edit (no JavaScript knowledge needed):
    - Change only the text between quotes "like this".
@@ -115,7 +118,7 @@ Aurora.content.cognitive = {
     ],
 
     mta: [
-      { value: 0, label: "0", hint: "no CSF is visible around the hippocampus",
+      { value: 0, label: "0", hint: "no cerebrospinal fluid visible around the hippocampus",
         export: "0: no CSF is visible around the hippocampus" },
       { value: 1, label: "1", hint: "choroid fissure is slightly widened",
         export: "1: choroid fissure is slightly widened" },
@@ -260,10 +263,10 @@ Aurora.content.cognitive = {
   ],
 
   /* ---------------------------------------------------------------------------
-     4. CUT-OFFS used by the report
+     4. CUTOFFS used by the report
      --------------------------------------------------------------------------- */
   cutoffs: {
-    mtaAge: 75,          // age limit (years) for the MTA cut-off
+    mtaAge: 75,          // age limit (years) for the MTA cutoff
     mtaUnder: 2,         // abnormal if score >= 2 under mtaAge
     mtaFrom: 3,          // abnormal if score >= 3 from mtaAge
     erica: 2,            // ERICA abnormal if score >= 2
@@ -362,23 +365,23 @@ Aurora.content.cognitive = {
         thirdValue: "third ventricle: {n}"
       },
       mta: {
-        missingAge:   "Medial Temporal Atrophy (MTA) score: {scores}; age not provided (age-adjusted cut-off: ≥2 under 75 years, ≥3 from 75 years).",
+        missingAge:   "Medial Temporal Atrophy (MTA) score: {scores}; age not provided (age-adjusted cutoff: ≥2 under 75 years, ≥3 from 75 years).",
         scoresEqual:  "bilateral = {left}",
         scoresDiff:   "left = {left} and right = {right}",
-        bothAbnormalEqual: "Medial Temporal Atrophy (MTA) score: bilateral = {left}; meets the age-adjusted cut-off.",
-        bothAbnormalDiff:  "Medial Temporal Atrophy (MTA) score: left = {left} and right = {right}; both meet the age-adjusted cut-off.",
-        oneAbnormal:  "Medial Temporal Atrophy (MTA) score: {abnSide} = {abnValue} (meets the age-adjusted cut-off) and {normSide} = {normValue} (below the cut-off).",
-        normalEqual:  "Medial Temporal Atrophy (MTA) score: bilateral = {left}; below the age-adjusted cut-off.",
-        normalDiff:   "Medial Temporal Atrophy (MTA) score: left = {left} and right = {right}; below the age-adjusted cut-off.",
+        bothAbnormalEqual: "Medial Temporal Atrophy (MTA) score: bilateral = {left}; meets the age-adjusted cutoff.",
+        bothAbnormalDiff:  "Medial Temporal Atrophy (MTA) score: left = {left} and right = {right}; both meet the age-adjusted cutoff.",
+        oneAbnormal:  "Medial Temporal Atrophy (MTA) score: {abnSide} = {abnValue} (meets the age-adjusted cutoff) and {normSide} = {normValue} (below the cutoff).",
+        normalEqual:  "Medial Temporal Atrophy (MTA) score: bilateral = {left}; below the age-adjusted cutoff.",
+        normalDiff:   "Medial Temporal Atrophy (MTA) score: left = {left} and right = {right}; below the age-adjusted cutoff.",
         side: { left: "left", right: "right" }
       },
       erica: {
-        bothAbnormalEqual: "Entorhinal Cortical Atrophy (ERICA) score: bilateral = {left}; meets the published cut-off (≥2).",
-        bothAbnormalDiff:  "Entorhinal Cortical Atrophy (ERICA) score: right = {right} and left = {left}; both meet the published cut-off (≥2).",
-        oneAbnormal: "Entorhinal Cortical Atrophy (ERICA) score: right = {right} ({rightStatus}) and left = {left} ({leftStatus}); published cut-off ≥2.",
-        normalEqual: "Entorhinal Cortical Atrophy (ERICA) score: bilateral = {left}; below the published cut-off (≥2).",
-        normalDiff:  "Entorhinal Cortical Atrophy (ERICA) score: right = {right} and left = {left}; below the published cut-off (≥2).",
-        status: { abnormal: "meets the cut-off", normal: "below the cut-off" },
+        bothAbnormalEqual: "Entorhinal Cortical Atrophy (ERICA) score: bilateral = {left}; meets the published cutoff (≥2).",
+        bothAbnormalDiff:  "Entorhinal Cortical Atrophy (ERICA) score: right = {right} and left = {left}; both meet the published cutoff (≥2).",
+        oneAbnormal: "Entorhinal Cortical Atrophy (ERICA) score: right = {right} ({rightStatus}) and left = {left} ({leftStatus}); published cutoff ≥2.",
+        normalEqual: "Entorhinal Cortical Atrophy (ERICA) score: bilateral = {left}; below the published cutoff (≥2).",
+        normalDiff:  "Entorhinal Cortical Atrophy (ERICA) score: right = {right} and left = {left}; below the published cutoff (≥2).",
+        status: { abnormal: "meets the cutoff", normal: "below the cutoff" },
         side: { left: "left", right: "right" }
       },
       koedam: {
@@ -512,30 +515,53 @@ Aurora.content.cognitive = {
   },
 
   /* ---------------------------------------------------------------------------
-     6. SINGLE CALCULATORS (English only, as in the Shiny app)
+     6. SINGLE CALCULATORS (GCA, MTA, ERICA, Koedam): the result sentence, in the
+        language of the site. "side" = the words for right and left in {highSide} / {lowSide}.
      --------------------------------------------------------------------------- */
   calculatorText: {
-    gca: {
-      result: "Global cortical atrophy (GCA) score = {score}.",
-      sulci: "Sulci: {list}.", ventricles: "Ventricles: {list}."
+    en: {
+      side: { right: "right", left: "left" },
+      gca: {
+        result: "Global cortical atrophy (GCA) score = {score}.",
+        sulci: "Sulci: {list}.", ventricles: "Ventricles: {list}."
+      },
+      mta: {
+        equal: "Medial temporal atrophy (MTA) score = {score} bilaterally.",
+        diff:  "Medial temporal atrophy (MTA) score = {high} on the {highSide} and {low} on the {lowSide} side.",
+        interpretation: ["Published age-adjusted cutoffs (each side): ≥2 under 75 years; ≥3 from 75 years (Torisson 2015)."]
+      },
+      erica: {
+        equal: "Entorhinal cortical atrophy (ERICA) score = {score} bilaterally.",
+        diff:  "Entorhinal cortical atrophy (ERICA) score = {high} on the {highSide} and {low} on the {lowSide} side.",
+        interpretation: ["Published cutoff (each side): ≥2 (Enkirch 2018)."]
+      },
+      koedam: {
+        equal: "Posterior parietal atrophy (Koedam) score = {score} bilaterally.",
+        diff:  "Posterior parietal atrophy (Koedam) score = {high} on the {highSide} and {low} on the {lowSide} side.",
+        interpretation: []
+      }
     },
-    mta: {
-      equal: "Medial temporal atrophy (MTA) score = {score} bilaterally.",
-      diff:  "Medial temporal atrophy (MTA) score = {high} on the {highSide} and {low} on the {lowSide} side.",
-      interpretationTitle: "Published age-adjusted cut-offs (each side):",
-      interpretation: ["Published age-adjusted cut-offs (each side): ≥2 under 75 years; ≥3 from 75 years (Torisson 2015)."]
-    },
-    erica: {
-      equal: "Entorhinal cortical atrophy (ERICA) score = {score} bilaterally.",
-      diff:  "Entorhinal cortical atrophy (ERICA) score = {high} on the {highSide} and {low} on the {lowSide} side.",
-      interpretationTitle: "Published cut-off (each side):",
-      interpretation: ["Published cut-off (each side): ≥2 (Enkirch 2018)."]
-    },
-    koedam: {
-      equal: "Posterior parietal atrophy (Koedam) score = {score} bilaterally.",
-      diff:  "Posterior parietal atrophy (Koedam) score = {high} on the {highSide} and {low} on the {lowSide} side.",
-      interpretationTitle: "",
-      interpretation: []
+    pt: {
+      side: { right: "direito", left: "esquerdo" },
+      gca: {
+        result: "Global cortical atrophy (GCA) = {score}.",
+        sulci: "Sulcos: {list}.", ventricles: "Ventrículos: {list}."
+      },
+      mta: {
+        equal: "Medial Temporal Atrophy (MTA): bilateral = {score}.",
+        diff:  "Medial Temporal Atrophy (MTA): {highSide} = {high} e {lowSide} = {low}.",
+        interpretation: ["Valores de referência publicados, ajustados à idade (cada lado): ≥2 abaixo dos 75 anos; ≥3 a partir dos 75 anos (Torisson 2015)."]
+      },
+      erica: {
+        equal: "Entorhinal Cortical Atrophy (ERICA): bilateral = {score}.",
+        diff:  "Entorhinal Cortical Atrophy (ERICA): {highSide} = {high} e {lowSide} = {low}.",
+        interpretation: ["Valor de referência publicado (cada lado): ≥2 (Enkirch 2018)."]
+      },
+      koedam: {
+        equal: "Posterior parietal atrophy (Koedam): bilateral = {score}.",
+        diff:  "Posterior parietal atrophy (Koedam): {highSide} = {high} e {lowSide} = {low}.",
+        interpretation: []
+      }
     }
   }
 };

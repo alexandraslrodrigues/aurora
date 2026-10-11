@@ -1,15 +1,15 @@
 /* Atrophy calculators (GCA, MTA, ERICA, Koedam). Results update as you click. */
 (function (root) {
   "use strict";
-  var A = root.Aurora, ui = A.ui, h = ui.h, E = A.engine;
+  var A = root.Aurora, ui = A.ui, h = ui.h, E = A.engine, t = A.t;
   var C = function () { return A.content.cognitive; };
 
-  // rail = name in the list on the left (the same names as in the Aurora Report)
+  // rail = name in the list on the left (the same names as in the Aurora Report); short = name in the row of names (phones)
   var CALCS = [
-    { slug: "gca",    title: "Global Cortical Atrophy (GCA)",            rail: "Global cortical atrophy",    desc: "Sulci and ventricles, 0–3 per region", info: "gca" },
-    { slug: "mta",    title: "Medial Temporal Atrophy (MTA)",            rail: "Medial temporal atrophy",    desc: "Scheltens score, 0–4 per side",        info: "mta" },
-    { slug: "erica",  title: "Entorhinal Cortical Atrophy (ERICA)",      rail: "Entorhinal atrophy",         desc: "Enkirch score, 0–3 per side",          info: "erica" },
-    { slug: "koedam", title: "Posterior Parietal Atrophy (Koedam)",      rail: "Posterior parietal atrophy", desc: "Koedam score, 0–3 per side",           info: "koedam" }
+    { slug: "gca",    title: t("Global Cortical Atrophy (GCA)"),       short: "GCA",    rail: t("Global cortical atrophy"),    desc: t("Sulci and ventricles, 0–3 per region"), info: "gca" },
+    { slug: "mta",    title: t("Medial Temporal Atrophy (MTA)"),       short: "MTA",    rail: t("Medial temporal atrophy"),    desc: t("Scheltens score, 0–4 per side"),        info: "mta" },
+    { slug: "erica",  title: t("Entorhinal Cortical Atrophy (ERICA)"), short: "ERICA",  rail: t("Entorhinal atrophy"),         desc: t("Enkirch score, 0–3 per side"),          info: "erica" },
+    { slug: "koedam", title: t("Posterior Parietal Atrophy (Koedam)"), short: "Koedam", rail: t("Posterior parietal atrophy"), desc: t("Koedam score, 0–3 per side"),           info: "koedam" }
   ];
 
   // values kept for the open tab (sessionStorage, like the report and the movement calculators)
@@ -32,17 +32,17 @@
   function frame(page, headSlot, category, slug, o) {
     var links = A.calculatorLinks(category);
     page.classList.add("calc-page");
-    var rail = h("nav", { class: "rp-rail calc-rail", "aria-label": "Calculators" },
+    var rail = h("nav", { class: "rp-rail calc-rail", "aria-label": t("Calculators") },
       h("ol", null, links.map(function (l) {
         var cur = l.slug === slug;
         return h("li", { class: cur ? "cur" : null },
           h("a", { class: "rr-name", href: l.href, "aria-current": cur ? "page" : null }, h("span", { class: "rr-t" }, l.rail || l.short)));
       })));
-    var tabs = h("nav", { class: "calc-nav", "aria-label": "Calculators" }, links.map(function (l) {
+    var tabs = h("nav", { class: "calc-nav", "aria-label": t("Calculators") }, links.map(function (l) {
       return h("a", { href: l.href, class: l.slug === slug ? "active" : null, "aria-current": l.slug === slug ? "page" : null }, l.short || l.title);
     }));
-    var ref = h("aside", { class: "ref-panel", "aria-label": "Info" });
-    var infoBtn = h("button", { type: "button", class: "info-link", title: "Definition, reference images and source", "aria-label": "Info: " + o.title,
+    var ref = h("aside", { class: "ref-panel", "aria-label": t("Info") });
+    var infoBtn = h("button", { type: "button", class: "info-link", title: t("Definition, reference images and source"), "aria-label": t("Info: {title}", { title: o.title }),
       onclick: function () {
         if (root.innerWidth < 1024) { var c = o.ref(); ui.openModal(c.title, c.node); }   // phones and tablets: a pop-up
         else { if (!infoOpen) fill(); setOpen(!infoOpen, true); }
@@ -57,7 +57,7 @@
       var c = o.ref();
       ref.innerHTML = "";
       ref.appendChild(h("div", { class: "ref-head" }, h("h2", null, c.title),
-        h("button", { type: "button", class: "icon-btn ref-close", "aria-label": "Close", title: "Close", html: ICON_X, onclick: function () { setOpen(false); } })));
+        h("button", { type: "button", class: "icon-btn ref-close", "aria-label": t("Close"), title: t("Close"), html: ICON_X, onclick: function () { setOpen(false); } })));
       ref.appendChild(ui.externalLinks(c.node));
       ref.scrollTop = 0;
     }
@@ -72,7 +72,7 @@
     if (act && tabs.scrollWidth > tabs.clientWidth) tabs.scrollLeft = Math.max(0, act.offsetLeft - tabs.offsetLeft - 16);
     if (headSlot) headSlot.appendChild(h("div", { class: "rp-head-actions" },
       h("button", { type: "button", class: "btn new-report", onclick: o.onClear },
-        h("span", { class: "tab-ic", html: ICON_CLEAR }), h("span", { class: "nr-label" }, "Clear values"))));
+        h("span", { class: "tab-ic", html: ICON_CLEAR }), h("span", { class: "nr-label" }, t("Clear values")))));
     fill();
     setOpen(infoOpen, false);
     return {
@@ -97,8 +97,8 @@
     result.innerHTML = "";
     result.appendChild(h("div", { class: "cr-top" },
       h("button", { type: "button", class: "btn sm cr-copy", onclick: function () {
-        ui.copyText(text).then(function (ok) { ui.toast(ok ? "Result copied" : "Copy failed"); });
-      } }, "Copy result"),
+        ui.copyText(text).then(function (ok) { ui.toast(ok ? t("Result copied") : t("Copy failed")); });
+      } }, t("Copy result")),
       h("p", { class: "cr-head" }, rich(head))));
     if (rest) result.appendChild(h("p", { class: "cr-text cr-detail" }, rich(rest)));
     if (notes && notes.length) result.appendChild(h("div", { class: "cr-note" }, notes.map(function (t) { return h("p", null, t); })));
@@ -112,36 +112,36 @@
       var g = V.gca, total = [g.sulci, g.ventricles].reduce(function (t, part) {
         return t + ["frontal", "po", "temporal"].reduce(function (u, k) { return u + Number(part[k][0]) + Number(part[k][1]); }, 0);
       }, 0) + Number(g.third);
-      resultCard(result, function (mark) { return E.calcGCA(V.gca, mark); });
+      resultCard(result, function (mark) { return E.calcGCA(V.gca, mark, A.lang); });
     }
     function sg(get, set, label) {
       var s = ui.seg({ options: ch, get: get, set: function (v) { set(v); update(); }, cls: "compact", label: label });
       syncers.push(s.sync); return s;
     }
     var tbody = h("tbody");
-    [["sulci", "Sulci"], ["ventricles", "Ventricles"]].forEach(function (p) {
+    [["sulci", t("Sulci")], ["ventricles", t("Ventricles")]].forEach(function (p) {
       tbody.appendChild(h("tr", { class: "grp" }, h("th", { colspan: 3 }, p[1])));
-      [["frontal", "Frontal"], ["po", "Parieto-occipital"], ["temporal", "Temporal"]].forEach(function (r) {
+      [["frontal", t("Frontal")], ["po", t("Parieto-occipital")], ["temporal", t("Temporal")]].forEach(function (r) {
         tbody.appendChild(h("tr", null, h("td", { class: "rl" }, r[1]),
-          h("td", { "data-side": "Right" }, sg(function () { return V.gca[p[0]][r[0]][0]; }, function (v) { V.gca[p[0]][r[0]][0] = v; }, p[1] + " " + r[1] + " right")),
-          h("td", { "data-side": "Left" }, sg(function () { return V.gca[p[0]][r[0]][1]; }, function (v) { V.gca[p[0]][r[0]][1] = v; }, p[1] + " " + r[1] + " left"))));
+          h("td", { "data-side": t("Right") }, sg(function () { return V.gca[p[0]][r[0]][0]; }, function (v) { V.gca[p[0]][r[0]][0] = v; }, t("{part} {region} right", { part: p[1], region: r[1] }))),
+          h("td", { "data-side": t("Left") }, sg(function () { return V.gca[p[0]][r[0]][1]; }, function (v) { V.gca[p[0]][r[0]][1] = v; }, t("{part} {region} left", { part: p[1], region: r[1] })))));
       });
     });
-    tbody.appendChild(h("tr", null, h("td", { class: "rl" }, "Third ventricle"),
-      h("td", { "data-side": " " }, sg(function () { return V.gca.third; }, function (v) { V.gca.third = v; }, "Third ventricle")), h("td")));
-    pane.appendChild(h("table", { class: "rl-table" }, h("thead", null, h("tr", null, h("th"), h("th", null, "Right"), h("th", null, "Left"))), tbody));
+    tbody.appendChild(h("tr", null, h("td", { class: "rl" }, t("Third ventricle")),
+      h("td", { "data-side": " " }, sg(function () { return V.gca.third; }, function (v) { V.gca.third = v; }, t("Third ventricle"))), h("td")));
+    pane.appendChild(h("table", { class: "rl-table" }, h("thead", null, h("tr", null, h("th"), h("th", null, t("Right")), h("th", null, t("Left")))), tbody));
     update();
     return function () { V.gca = E.defaultState().gca; update(); };
   }
 
   function renderSides(key, choices, pane, result) {
-    var syncers = [], T = C().calculatorText[key], row = h("div", { class: "field-row" });
+    var syncers = [], T = C().calculatorText[E.calcLang(A.lang)][key], row = h("div", { class: "field-row" });
     function update() {
       ui.session.set(VKEY, V);
       syncers.forEach(function (f) { f(); });
-      resultCard(result, function (mark) { return E.calcSides(key, V[key].right, V[key].left, mark); }, T.interpretation);
+      resultCard(result, function (mark) { return E.calcSides(key, V[key].right, V[key].left, mark, A.lang); }, T.interpretation);
     }
-    [["right", "Right hemisphere"], ["left", "Left hemisphere"]].forEach(function (side) {
+    [["right", t("Right hemisphere")], ["left", t("Left hemisphere")]].forEach(function (side) {
       var hint = h("div", { class: "hint" });
       var s = ui.seg({ options: choices, get: function () { return V[key][side[0]]; }, set: function (v) { V[key][side[0]] = v; update(); }, label: side[1] });
       syncers.push(s.sync);

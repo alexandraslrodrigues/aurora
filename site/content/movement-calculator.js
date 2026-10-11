@@ -79,17 +79,17 @@ Aurora.content.movement = {
   // Measurements (form fields). "plausible" = wider than the ranges reported in the
   // published cohorts; a value outside it is flagged as a probable measurement/typing error.
   // "short" = name in warnings and in Copy result ("copy" replaces it in Copy result when given).
+  // "parts" = one box per part (right and left, or the 3 parts of the third ventricle); Aurora uses their mean.
   measurements: {
     midbrain: { label: "Midbrain surface area (mm²)",                   short: "Midbrain area",                       unit: " mm²", min: 30,  max: 180, help: "area_mes_pon.webp" },
     pons:     { label: "Pons surface area (mm²)",                       short: "Pons area",                           unit: " mm²", min: 250, max: 800, help: "area_mes_pon.webp" },
-    scp:      { label: "Width of superior cerebellar peduncles (mm)",   short: "Superior cerebellar peduncle width",  unit: " mm",  min: 1,   max: 6,   help: "picture_scp.webp" },
-    mcp:      { label: "Width of middle cerebellar peduncles (mm)",     short: "Middle cerebellar peduncle width",    unit: " mm",  min: 3,   max: 15,  help: "picture_mcp.webp" },
-    v3:       { label: "Width of the third ventricle V3 (mm), 3 measurements", short: "Third ventricle width (mean)", copy: "Third ventricle width", unit: " mm",  min: 1,   max: 20,  help: "picture_3v.webp" },
+    scp:      { label: "Width of superior cerebellar peduncles (mm), right and left", short: "Superior cerebellar peduncle width", unit: " mm", min: 1, max: 6, help: "picture_scp.webp", parts: ["Right", "Left"] },
+    mcp:      { label: "Width of middle cerebellar peduncles (mm), right and left", short: "Middle cerebellar peduncle width", unit: " mm", min: 3, max: 15, help: "picture_mcp.webp", parts: ["Right", "Left"] },
+    v3:       { label: "Width of the third ventricle V3 (mm), 3 measurements", short: "Third ventricle width (mean)", copy: "Third ventricle width", unit: " mm",  min: 1,   max: 20,  help: "picture_3v.webp", parts: ["Anterior", "Middle", "Posterior"] },
     fh:       { label: "Frontal horns width, maximal left-to-right (mm)", short: "Frontal horns width",                 unit: " mm",  min: 20,  max: 60,  help: "picture_fh.webp" },
     md:       { label: "Midbrain AP diameter, collicular plate excluded (mm)", short: "Midbrain AP diameter",                unit: " mm",  min: 5,   max: 14,  help: "help_diameters" },
     pd:       { label: "Pontine base AP diameter, tegmentum excluded (mm)", short: "Pontine base AP diameter",                    unit: " mm",  min: 10,  max: 25,  help: "help_diameters" }
   },
-  v3Parts: ["Anterior", "Middle", "Posterior"],
 
   // The calculators, in the order shown (each has its own page/URL). "shows" = indices reported.
   calculators: [
@@ -106,23 +106,23 @@ Aurora.content.movement = {
     "area_mes_pon.webp": {
       title: "Midbrain and pons areas",
       steps: ["True midsagittal T1-weighted image (through the aqueduct and the interpeduncular cistern).",
-              "Line A: through the superior pontine notch and the inferior edge of the quadrigeminal plate.",
-              "Line B: parallel to line A, through the inferior pontine notch.",
-              "Midbrain area: the delta-shaped midbrain tegmentum above line A, closed by line A; the tectum (quadrigeminal plate) is excluded.",
-              "Pons area: between lines A and B, bounded by the anterior and posterior margins of the pons."],
+              "Upper blue line: through the superior pontine notch and the inferior edge of the quadrigeminal plate.",
+              "Lower blue line: parallel to the upper line, through the inferior pontine notch.",
+              "Midbrain area (upper red outline): the delta-shaped midbrain tegmentum above the upper line, closed by it; the tectum (quadrigeminal plate) is excluded.",
+              "Pons area (lower red outline): between the two blue lines, bounded by the anterior and posterior margins of the pons."],
       method: ["Quattrone 2008", "Oba 2005"] },
     "picture_scp.webp": {
       title: "Superior cerebellar peduncle (SCP) width",
       steps: ["Oblique coronal T1-weighted images, reformatted from a slab tangent to the floor of the fourth ventricle (red line).",
               "Starting view: the first image, moving anteroposteriorly, where the inferior colliculi and the SCPs are separated.",
               "Measure the distance between the medial and lateral borders of each SCP at the middle of its extension, on 3 consecutive sections.",
-              "Enter the mean of both SCPs."],
+              "Enter the right and left widths (each the mean of its 3 sections); Aurora uses the mean of both."],
       method: ["Quattrone 2008"] },
     "picture_mcp.webp": {
       title: "Middle cerebellar peduncle (MCP) width",
       steps: ["Parasagittal T1-weighted image that best shows the MCP between the pons and the cerebellum.",
               "Measure the distance between the superior and inferior borders of the MCP, delimited by the cerebrospinal fluid of the pontocerebellar cisterns.",
-              "Measure left and right, and enter the mean."],
+              "Measure right and left; Aurora uses the mean of both."],
       method: ["Quattrone 2008", "Nicoletti 2006"] },
     "picture_3v.webp": {
       title: "Third ventricle width",

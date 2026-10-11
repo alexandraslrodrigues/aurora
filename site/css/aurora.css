@@ -88,6 +88,23 @@ button { font: inherit; color: inherit; }
 .mainnav a.active { color: var(--text); font-weight: 600; }
 .theme-btn { width: 34px; height: 34px; margin-left: 4px; }
 .theme-btn svg { width: 17px; height: 17px; }
+/* language: EN / PT next to the moon, with a small menu */
+.lang-menu { position: relative; margin-left: 2px; }
+.lang-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 34px; padding: 0 7px;
+  border: 0; border-radius: 6px; background: transparent; color: var(--muted); cursor: pointer;
+  font-size: 12.5px; font-weight: 600; letter-spacing: .04em; }
+.lang-btn:hover, .lang-btn[aria-expanded="true"] { color: var(--text); background: var(--hover); }
+.lang-pop { position: absolute; right: 0; top: calc(100% + 6px); z-index: 40; min-width: 168px; padding: 4px;
+  background: var(--bg); border: 1px solid var(--line-2); border-radius: 10px; box-shadow: 0 8px 28px rgba(20, 20, 30, .12); }
+:root[data-theme="dark"] .lang-pop { box-shadow: 0 8px 28px rgba(0, 0, 0, .5); }
+.lang-pop button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 16px;
+  border: 0; background: transparent; color: var(--text); cursor: pointer; text-align: left;
+  font-size: 14px; padding: 8px 10px; border-radius: 6px; }
+.lang-pop button:hover, .lang-pop button:focus-visible { background: var(--hover); outline: none; }
+.lang-pop .lp-code { color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .04em; }
+.lang-pop button[aria-checked="true"] { font-weight: 600; }
+.lang-pop button[aria-checked="true"] .lp-code { color: var(--accent-text); }
+.info-content .info-abbr { font-size: 13px; color: var(--muted); }
 @media (max-width: 560px) {
   .topbar { padding: 0 12px; }
   .mainnav { gap: 0; }
@@ -234,9 +251,8 @@ input::placeholder { color: var(--faint); }
 /* title line of the report: New report */
 .rp-head-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .rp-report-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.rp-report-actions .lang { margin-right: 6px; }
-.rp-report-actions .lang button { min-width: 38px; min-height: 30px; padding: 3px 9px; font-size: 12.5px; }
 .rp-report-actions .btn { min-height: 40px; }
+@media (max-width: 420px) { .rp-report-actions { gap: 6px; } .rp-report-actions .btn { padding: 7px 11px; } }
 .rp-head-actions .new-report { min-height: 40px; padding: 7px 14px; color: var(--muted); }
 .rp-head-actions .new-report:hover { color: var(--text); }
 /* ---------- Aurora Report: section list (left box), current step (middle), Previous / Next (bottom middle) ---------- */
@@ -338,6 +354,7 @@ input::placeholder { color: var(--faint); }
 .loc-rows { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0 28px; }
 .loc-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--line); }
 .loc-row .loc-label { font-size: 14px; }
+.loc-row .seg { flex-wrap: nowrap; flex: none; }     /* the R / L buttons stay side by side; a long name wraps instead */
 
 /* microbleed grid */
 .mb-table { width: 100%; max-width: 560px; border-collapse: collapse; }
@@ -412,7 +429,6 @@ input::placeholder { color: var(--faint); }
 .rp-body p { margin: 0 0 10px; line-height: 1.65; font-size: 15.5px; cursor: pointer; }
 .rp-body p:hover { color: var(--accent-text); }
 .rp-body .empty { color: var(--muted); cursor: default; }
-.lang button { min-height: 30px; padding: 3px 12px; font-size: 13px; }
 
 /* ---------- calculators ---------- */
 .calc-nav { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 22px; }
@@ -513,6 +529,8 @@ dl.ab-grid { margin: 0; }
 .ab-aff-i + .ab-aff-i { margin-top: 6px; }      /* one affiliation = one small block */
 .about-page .cite-text { margin-bottom: 14px; }
 .ab-grid section p { margin: 0 0 16px; }
+.ab-grid section p.ab-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 0; color: var(--muted); }
+.ab-contact .app-only { display: inline-flex; align-items: center; gap: 10px; }
 .about-page .btn svg { width: 15px; height: 15px; }
 .about-page + .license { margin-top: 64px; }
 @media (max-width: 640px) {
@@ -651,7 +669,7 @@ dl.ab-grid { margin: 0; }
 .pr-end { margin-top: 26px; }
 .prose .pr-end h3, .pr-end h3 { margin: 0 0 4px; font-size: 13px; font-weight: 400; color: var(--muted); }
 .pr-end p { margin: 0; font-size: 14px; }
-.pr-abbr { max-width: 900px; margin: 24px 0 0; font-size: 12px; line-height: 1.55; color: var(--muted); }
+.pr-abbr { margin: 24px 0 0; font-size: 12px; line-height: 1.55; color: var(--muted); }
 .pr-notes { margin-top: 14px; }
 .pr-notes p { font-size: 13px; color: var(--muted); margin: 0 0 4px; }
 .pr-refs-list .pr-updated { margin: 22px 0 0; font-size: 13px; color: var(--muted); }
@@ -719,6 +737,8 @@ dl.ab-grid { margin: 0; }
 .pf-row { display: grid; grid-template-columns: 72px minmax(0, 1fr); align-items: start; gap: 16px; }
 .pf-label { padding-top: 10px; font-size: 14px; font-weight: 500; color: var(--muted); }
 .pf-seg button { min-height: 40px; padding: 0 18px; font-size: 14px; }
+@media (max-width: 420px) { .pf-seg button { padding: 0 13px; } }   /* "Feminino · Masculino · NA" on one line on phones */
+@media (max-width: 380px) { .pf-seg button { padding: 0 9px; } .pf-row { gap: 12px; } }
 .pf-age { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; }
 .pf-age input { width: 96px; height: 40px; padding: 0 12px; font-size: 15px; }
 /* small ⓘ with a note on mouse-over / tap */
@@ -826,6 +846,10 @@ dl.ab-grid { margin: 0; }
 
 .modal:has(.fb-form) { width: min(560px, calc(100vw - 24px)); }
 @media (max-width: 560px) { .modal:has(.fb-form) { width: 100vw; } }
+
+/* Software version and DOI under "How to cite" (About) */
+/* the software citation: same size as the article citation, just under it */
+.about-page .cite-soft { margin: -8px 0 16px; }
 
 /* ---------------------------------------------------------------- search engines
    .site-summary: text in index.html for search engines and AI tools that do not run JavaScript.

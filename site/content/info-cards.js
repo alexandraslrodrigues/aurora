@@ -11,13 +11,23 @@
 var Aurora = globalThis.Aurora = globalThis.Aurora || {};
 Aurora.content = Aurora.content || {};
 
+// Abbreviations explained under each ⓘ card when they appear in it (unless the card already explains them, as "(DWI)")
+Aurora.content.infoAbbreviations = {
+  "CSF":   "cerebrospinal fluid",
+  "DWI":   "diffusion-weighted imaging",
+  "FLAIR": "fluid-attenuated inversion recovery",
+  "GRE":   "gradient echo",
+  "MR":    "magnetic resonance",
+  "SWI":   "susceptibility-weighted imaging"
+};
+
 Aurora.content.info = {
 
   rsi: {
     title: "Recent small subcortical infarcts",
     images: ["picture_rsi.webp"],
     body:
-      "<p>An acute infarct in the territory of a single perforating artery, as seen in MR DWI, typically associated with a corresponding focal neurological deficit. " +
+      "<p>An acute infarct in the territory of a single perforating artery, as seen on diffusion-weighted imaging (DWI), typically associated with a corresponding focal neurological deficit. " +
       "The term small refers to a lesion less than 20 mm in maximum axial diameter (axial plane), though infarcts may appear slightly larger on coronal imaging. " +
       "No lower size limit is specified, as DWI allows distinction of very small infarcts from perivascular spaces.</p>" +
       "<p>Exclusions - do not classify as small subcortical infarcts:</p>" +
@@ -33,9 +43,9 @@ Aurora.content.info = {
     title: "Lacunes of presumed vascular origin",
     images: ["picture_li.webp"],
     body:
-      "<p>Lacunes of presumed vascular origin are round or ovoid, fluid-filled cavities in the subcortical region that mirror cerebrospinal fluid signal. They typically measure 3–15 mm; cavities smaller than 3 mm can also be the end result of a recent small subcortical infarct.</p>" +
-      "<p>Differentiation from enlarged perivascular spaces can be challenging, as both can be similar in size and may lack a hyperintense T2 rim. Consider cavity shape, the presence of adjacent perivascular spaces, and signal changes in surrounding tissue to improve specificity.</p>" +
-      "<p>Lacunes may arise from small subcortical infarcts, small subcortical haemorrhages, incidental DWI-positive lesions, or represent end-stage cavitation within a white matter hyperintensity.</p>",
+      "<p>Lacunes of presumed vascular origin are round or ovoid, fluid-filled cavities in the subcortical region that mirror cerebrospinal fluid signal. They typically measure 3–15 mm; cavities smaller than 3 mm can also result from a recent small subcortical infarct.</p>" +
+      "<p>Differentiation from enlarged perivascular spaces can be challenging, as both can be similar in size and may lack a hyperintense T2 rim. Consider cavity shape, the presence of adjacent perivascular spaces, and signal changes in surrounding tissue to improve the specificity of the differential diagnosis.</p>" +
+      "<p>Lacunes may arise from small subcortical infarcts, small subcortical hemorrhages, incidental lesions with restricted diffusion, or represent end-stage cavitation within a white matter hyperintensity.</p>",
     credits:
       "<p>Figure adapted from: Mahammedi, A. et al. (2022). <a href='https://doi.org/10.3174/ajnr.A7302'>Small Vessel Disease, a Marker of Brain Health: What the Radiologist Needs to Know. American Journal of Neuroradiology, 43, 650–660.</a> " +
       "© 2022 American Society of Neuroradiology. Used with permission.</p>" +
@@ -70,11 +80,11 @@ Aurora.content.info = {
     title: "Microbleed Anatomical Rating Scale (MARS)",
     images: [],
     body:
-      "<p>Cerebral microbleeds are small, chronic brain hemorrhages visible as focal, round, hypointense lesions on T2*-GRE or SWI sequences, reflecting hemosiderin deposits due to vascular leakage. The Microbleed Anatomical Rating Scale (MARS) provides a standardized approach for categorizing microbleeds by anatomical location and imaging characteristics.</p>" +
+      "<p>Cerebral microbleeds are small, chronic brain hemorrhages visible as focal, round, hypointense lesions on T2*-weighted gradient echo (T2*-GRE) or susceptibility-weighted sequences, reflecting hemosiderin deposits due to vascular leakage. The Microbleed Anatomical Rating Scale (MARS) provides a standardized approach for categorizing microbleeds by anatomical location and imaging characteristics.</p>" +
       "<ul><li>Lobar: cortical and subcortical regions, including subcortical U-fibers.</li>" +
       "<li>Deep: basal ganglia, thalamus, internal capsule, external capsule, corpus callosum, and deep/periventricular white matter (within approximately 10 mm of the lateral ventricles).</li>" +
       "<li>Infratentorial: brainstem and cerebellum.</li></ul>" +
-      "<p>Imaging classification (GRE T2*-weighted):</p>" +
+      "<p>Imaging classification (T2*-GRE):</p>" +
       "<ul><li>Definite microbleeds: small (2–10 mm), round or circular, well-defined hypointense lesions.</li>" +
       "<li>Possible microbleeds: less well-defined, less hypointense, or not strictly rounded.</li></ul>",
     credits:
@@ -85,7 +95,7 @@ Aurora.content.info = {
     title: "Cortical Superficial Siderosis Multifocality Rating Scale",
     images: ["picture_ss.webp"],
     body:
-      "<p>Cortical superficial siderosis (cSS) is identified as a well-defined, homogeneous, curvilinear hypointense signal (black) on T2*-GRE or SWI, following the outer surface of the cerebral cortex within the subarachnoid space. Do not score cSS if it is contiguous or anatomically connected to lobar intracerebral hemorrhage (ICH). To be considered separate, cSS must be ≥3 sulci away, or ≥2 sulci away on multiple axial levels without clear superficial communication.</p>" +
+      "<p>Cortical superficial siderosis (cSS) is identified as a well-defined, homogeneous, curvilinear hypointense signal on T2*-weighted gradient echo or susceptibility-weighted images, following the outer surface of the cerebral cortex within the subarachnoid space. Do not score cSS if it is contiguous or anatomically connected to a lobar intracerebral hemorrhage. To be considered separate, cSS must be ≥3 sulci away, or ≥2 sulci away on multiple axial levels without clear superficial communication.</p>" +
       "<ul><li>cSS score (each hemisphere): 0 = no cSS, 1 = 1 sulcus or ≤3 adjacent sulci and 2 = ≥2 non-adjacent or &gt;3 adjacent sulci.</li>" +
       "<li>cSS total score (right + left): 0 = no cSS, 1 = mild/unifocal and ≥2 = severe/multifocal.</li></ul>",
     credits:
@@ -97,7 +107,7 @@ Aurora.content.info = {
     title: "Global Cortical Atrophy Scale (GCA)",
     images: ["picture_gca.webp"],
     body:
-      "<p>GCA scale 0: no atrophy; 1: mild atrophy – enlargement of sulci; 2: moderate atrophy – volume loss of gyri; 3: severe atrophy – “knife-blade” atrophy.</p>",
+      "<p><b>Scale:</b> 0 = no atrophy; 1 = mild atrophy, enlargement of sulci; 2 = moderate atrophy, volume loss of gyri; 3 = severe atrophy, “knife-blade” atrophy.</p>",
     credits:
       "<p>Figure adapted from: Furtner, J. &amp; Prayer, D. (2021). <a href='https://doi.org/10.1007/s10354-021-00825-x'>Neuroimaging in dementia. Wien Med Wochenschr, 171, 274–281.</a> Licensed under <a href='http://creativecommons.org/licenses/by/4.0/'>CC BY 4.0</a>.</p>" +
       "<p>GCA scale adapted from: Pasquier, F. et al. (1996). <a href='https://doi.org/10.1159/000117270'>Inter- and Intraobserver Reproducibility of Cerebral Atrophy Assessment on MRI Scans with Hemispheric Infarcts. European Neurology, 36(5), 268–272.</a></p>"
@@ -107,30 +117,32 @@ Aurora.content.info = {
     title: "Medial Temporal Lobe Atrophy Score (MTA)",
     images: ["picture_mta.webp"],
     body:
-      "<p>Medial Temporal Lobe Atrophy (MTA) score in coronal T1-weighted MRI. The score is based on qualitative evaluation of the widening of the choroid fissure, enlargement of the temporal horn, and atrophy of the hippocampus.</p>" +
-      "<ul><li>0: no CSF is visible around the hippocampus</li>" +
+      "<p><b>Orientation:</b> coronal T1-weighted image, in a plane parallel to the brainstem axis, through the hippocampus at the level of the anterior pons. Each hemisphere is rated separately.</p>" +
+      "<p><b>Scale</b> (width of the choroid fissure, width of the temporal horn and height of the hippocampus):</p>" +
+      "<ul><li>0: no cerebrospinal fluid visible around the hippocampus</li>" +
       "<li>1: choroid fissure is slightly widened</li>" +
       "<li>2: moderate widening of the choroid fissure, mild enlargement of the temporal horn and mild loss of hippocampal height</li>" +
       "<li>3: marked widening of the choroid fissure, moderate enlargement of the temporal horn, and moderate loss of hippocampal height</li>" +
       "<li>4: marked widening of the choroid fissure, marked enlargement of the temporal horn, and the hippocampus is markedly atrophied and internal structure is lost</li></ul>" +
-      "<p>Published age-adjusted cut-offs (each hemisphere): ≥2 under 75 years; ≥3 from 75 years.</p>",
+      "<p>Published age-adjusted cutoffs (each hemisphere): ≥2 under 75 years; ≥3 from 75 years.</p>",
     credits:
       "<p>Figure adapted from: Håkansson, C. et al. (2022). <a href='https://doi.org/10.1007/s00330-021-08177-1'>Inter-modality assessment of medial temporal lobe atrophy in a non-demented population: application of a visual rating scale template across radiologists with varying clinical experience. Eur Radiol, 32, 1127–1134.</a> Licensed under <a href='http://creativecommons.org/licenses/by/4.0/'>CC BY 4.0</a>.</p>" +
       "<p>MTA scale adapted from: Scheltens, P., Leys, D., Barkhof, F. et al. (1992). <a href='https://doi.org/10.1136/jnnp.55.10.967'>Atrophy of medial temporal lobes on MRI in “probable” Alzheimer’s disease and normal ageing: diagnostic value and neuropsychological correlates. Journal of Neurology, Neurosurgery, and Psychiatry, 55(10), 967–972.</a></p>" +
       "<p>Reliability: Scheltens, P., Launer, L., Barkhof, F. et al. (1995). <a href='https://doi.org/10.1007/BF00868807'>Visual assessment of medial temporal lobe atrophy on magnetic resonance imaging: Interobserver reliability. Journal of Neurology, 242(9), 557–560.</a></p>" +
-      "<p>Age-adjusted cut-off: Torisson, G., van Westen, D., Stavenow, L., Minthon, L. &amp; Londos, E. (2015). <a href='https://doi.org/10.1186/s12877-015-0066-4'>Medial temporal lobe atrophy is underreported and may have important clinical correlates in medical inpatients. BMC Geriatrics, 15, 65.</a></p>"
+      "<p>Age-adjusted cutoff: Torisson, G., van Westen, D., Stavenow, L., Minthon, L. &amp; Londos, E. (2015). <a href='https://doi.org/10.1186/s12877-015-0066-4'>Medial temporal lobe atrophy is underreported and may have important clinical correlates in medical inpatients. BMC Geriatrics, 15, 65.</a></p>"
   },
 
   erica: {
     title: "Entorhinal Cortical Atrophy Score (ERICA)",
     images: ["picture_erica1.webp"],
     body:
-      "<p>Orientation: coronal sections aligned to the brainstem with a section thickness of 1 mm.</p>" +
-      "<ul><li>0: normal volume of the entorhinal cortex and parahippocampal gyrus.</li>" +
-      "<li>1: mild atrophy with widening of the collateral sulcus.</li>" +
-      "<li>2: moderate atrophy with detachment of the entorhinal cortex from the cerebellar tentorium (the 'tentorial cleft sign').</li>" +
-      "<li>3: pronounced atrophy of the parahippocampal gyrus and a wide cleft between entorhinal cortex and the cerebellar tentorium.</li></ul>" +
-      "<p>Published cut-off (each side): ≥2.</p>",
+      "<p><b>Orientation:</b> coronal sections aligned to the brainstem, 1 mm thick.</p>" +
+      "<p><b>Scale:</b></p>" +
+      "<ul><li>0: normal volume of the entorhinal cortex and parahippocampal gyrus</li>" +
+      "<li>1: mild atrophy with widening of the collateral sulcus</li>" +
+      "<li>2: moderate atrophy with detachment of the entorhinal cortex from the cerebellar tentorium (the ‘tentorial cleft sign’)</li>" +
+      "<li>3: pronounced atrophy of the parahippocampal gyrus and a wide cleft between entorhinal cortex and the cerebellar tentorium</li></ul>" +
+      "<p>Published cutoff (each side): ≥2.</p>",
     credits:
       "<p>Figure adapted from: Roberge, X., Brisson, M. &amp; Laforce, R. J. (2023). <a href='https://doi.org/10.1017/cjn.2021.253'>Specificity of Entorhinal Atrophy MRI Scale in Predicting Alzheimer’s Disease Conversion. Canadian Journal of Neurological Sciences, 50, 112–114.</a> Licensed under <a href='http://creativecommons.org/licenses/by/4.0/'>CC BY 4.0</a>.</p>" +
       "<p>Scale adapted from: Enkirch, S. J. et al. (2018). <a href='https://doi.org/10.1148/radiol.2018171888'>The ERICA Score: An MR Imaging–based Visual Scoring System for the Assessment of Entorhinal Cortex Atrophy in Alzheimer Disease. Radiology, 288(1), 226–233.</a></p>"
@@ -140,7 +152,9 @@ Aurora.content.info = {
     title: "Posterior parietal atrophy (Koedam score)",
     images: ["picture_pca.webp"],
     body:
-      "<p>On sagittal images, assess the posterior cingulate sulcus and parieto-occipital sulcus, and check for atrophy of the precuneus. On axial and coronal images, evaluate the widening of the posterior cingulate sulcus and look for sulcal dilatation in the parietal lobes. Atrophy should be rated on a scale from 0 to 3: 0 = no atrophy, 1 = mild, 2 = moderate, and 3 = severe.</p>",
+      "<p><b>Orientation:</b> sagittal, axial and coronal images.</p>" +
+      "<p><b>Assess:</b> on sagittal images, the posterior cingulate sulcus, the parieto-occipital sulcus and atrophy of the precuneus; on axial and coronal images, widening of the posterior cingulate sulcus and sulcal dilatation in the parietal lobes.</p>" +
+      "<p><b>Scale:</b> 0 = no atrophy; 1 = mild; 2 = moderate; 3 = severe.</p>",
     credits:
       "<p>Adapted from: Koedam, E. L. G. E. et al. (2011). <a href='https://doi.org/10.1007/s00330-011-2205-4'>Visual assessment of posterior atrophy: development of a MRI rating scale. European Radiology, 21, 2618–2625.</a> Licensed under <a href='https://creativecommons.org/licenses/by-nc/2.0/'>CC BY-NC</a>.</p>"
   },
@@ -149,7 +163,7 @@ Aurora.content.info = {
     title: "Total small vessel disease (SVD) score",
     images: ["picture_ssvds.webp"],
     body:
-      "<p>The total MRI burden of small vessel disease is graded from 0 to 4. Assign one point for each of the following:</p>" +
+      "<p>One point for each criterion present:</p>" +
       "<ul><li>Lacunes: presence of ≥1</li>" +
       "<li>Cerebral microbleeds: ≥1, any location (definite microbleeds; possible ones are described but do not count)</li>" +
       "<li>Perivascular spaces: moderate to severe (grade 2–4) in the basal ganglia</li>" +

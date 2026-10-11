@@ -6,7 +6,7 @@
 
 Aurora is a free, open-access website for structured neuroradiology reporting in neurodegenerative disorders.
 It brings validated visual rating scales, calculators, recommended MRI protocols and reference images together,
-with reports in English and Portuguese.
+in English and Portuguese (Portugal), with reports in both languages.
 
 **Use Aurora:** https://aurora-report.com
 
@@ -31,12 +31,13 @@ Aurora is a reporting aid. It is not a certified medical device and does not mak
 site/                        the website (this folder is what is published)
   index.html
   content/                   all texts, cutoffs and references, in plain data files
-    cognitive-report.js        report sentences (EN/PT), choices, Excel columns, cut-offs
+    cognitive-report.js        report sentences (EN/PT), choices, Excel columns, cutoffs
     info-cards.js              definitions, reference images, references and image credits
     movement-calculator.js     published cutoffs (one line each), DOIs, how to measure
     protocols.js               recommended MRI protocols
     pages.js                   home, Help and About texts
-  js/                        code (no framework, no build step)
+    lang-pt.js                 the interface in Portuguese (one file per language)
+  js/                        code (no framework, no build step); js/i18n.js picks the language
   css/aurora.css             colours and layout
   img/  fonts/  icons/
   sw.js, manifest.webmanifest  offline use and installation
@@ -45,6 +46,7 @@ site/                        the website (this folder is what is published)
   404.html                   "Page not found", written by tools/build-pages.js
 tools/
   build-pages.js             writes the reference pages, 404.html and sitemap.xml from site/content/
+  check-translations.js      lists texts without a translation, for each language
 publicar_aurora.command      double-click to rebuild the reference pages and publish
 enviar_para_github.command   double-click to save all changes to GitHub
 ```
@@ -60,6 +62,25 @@ enviar_para_github.command   double-click to save all changes to GitHub
 `site` folder to Cloudflare Pages (project `aurora-app`). By hand: run `node tools/build-pages.js`, then upload the
 `site` folder in Cloudflare › Workers & Pages › aurora-app › Create deployment.
 If you add or rename files used by the app, add them to `FILES` in `site/sw.js` and change `VERSION` there.
+
+**New version:** change `version` in `site/content/pages.js` and in `CITATION.cff`, publish, save to GitHub, then create a
+release on GitHub. Zenodo archives each release and gives it its own DOI (the DOI for all versions stays 10.5281/zenodo.23285019).
+
+## Languages
+
+The interface is in English and Portuguese (Portugal): the button at the top right (EN / PT) switches it, and the
+choice is remembered in the browser. A link can open Aurora in a language: `https://aurora-report.com/?lang=pt`.
+The report is written in the interface language.
+
+- The English texts are in the content files and the code; each other language has one file,
+  `site/content/lang-xx.js`, with the translations (short texts as "English": "translation", longer texts with the
+  same names as in the English files). A text without a translation is shown in English.
+- The report sentences of each language are in `site/content/cognitive-report.js` (`text.pt`, `calculatorText.pt`).
+- Scale names in the report sentences, references, image credits and Excel column names stay as published.
+- `node tools/check-translations.js` lists what is missing in each language, and translations no longer used.
+  `node tools/check-translations.js --list` lists every English text, to start a new language.
+- A new language: copy `lang-pt.js` as `lang-xx.js`, translate it, add it to `index.html` (before `js/i18n.js`)
+  and to `FILES` in `site/sw.js`, and add `text.xx` and `calculatorText.xx` to `cognitive-report.js` for reports.
 
 ## Search engines
 

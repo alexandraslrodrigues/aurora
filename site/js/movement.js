@@ -42,15 +42,19 @@
   }
 
   function values(m) {
-    var mid = positive(m.midbrain), p = positive(m.pons), md = positive(m.md), pd = positive(m.pd);
-    var scp = positive(m.scp), mcp = positive(m.mcp), fh = positive(m.fh), v3 = v3Mean(m);
+    var mid = measure(m, "midbrain"), p = measure(m, "pons"), md = measure(m, "md"), pd = measure(m, "pd");
+    var scp = measure(m, "scp"), mcp = measure(m, "mcp"), fh = measure(m, "fh"), v3 = measure(m, "v3");
     var mrpi = (p / mid) * (mcp / scp);
     var v = { mrpi: mrpi, mrpi2: mrpi * (v3 / fh), mpa: mid / p, md: md, mdpd: md / pd, mcp: mcp };
     Object.keys(v).forEach(function (k) { if (!isFinite(v[k])) delete v[k]; });
     return v;
   }
-  function v3Parts(m) { return (m.v3 || []).map(positive).filter(function (x) { return !isNaN(x); }); }
-  function v3Mean(m) { var p = v3Parts(m); return p.length ? p.reduce(function (a, b) { return a + b; }, 0) / p.length : NaN; }
+  // A measurement is one number, or several (third ventricle: 3 parts; peduncles: right and left): Aurora uses the mean
+  // of those entered. parts(m, id) = the valid numbers entered; measure(m, id) = their mean.
+  function parts(m, id) { var x = m[id]; return (Array.isArray(x) ? x : [x]).map(positive).filter(function (v) { return !isNaN(v); }); }
+  function measure(m, id) { var p = parts(m, id); return p.length ? p.reduce(function (a, b) { return a + b; }, 0) / p.length : NaN; }
+  function v3Parts(m) { return parts(m, "v3"); }
+  function v3Mean(m) { return measure(m, "v3"); }
 
   // Abbreviations found in a text (same rule as the Shiny app, without look-behind for older Safari)
   function abbrLine(txt, exclude) {
@@ -74,14 +78,20 @@
     return found.length ? found.map(function (a) { return a + ", " + ab[a]; }).join("; ") : null;
   }
 
-  A.movementEngine = { roundTo: roundTo, assess: assess, values: values, v3Parts: v3Parts, v3Mean: v3Mean, abbrLine: abbrLine, opLabel: opLabel, cutLabel: cutLabel };
+  A.movementEngine = { roundTo: roundTo, assess: assess, values: values, parts: parts, measure: measure, v3Parts: v3Parts, v3Mean: v3Mean, abbrLine: abbrLine, opLabel: opLabel, cutLabel: cutLabel };
 
   if (typeof document === "undefined") return;     // tests: logic only
 
   /* ------------------------------------------------------------ page */
-  var ui = A.ui, h = ui.h;
+  var ui = A.ui, h = ui.h, t = A.t, tn = A.i18n.tn, N = A.i18n.num;
   var KEY = "aurora.movement.v1";
-  var meas = ui.session.get(KEY) || { midbrain: null, pons: null, scp: null, mcp: null, v3: [null, null, null], fh: null, md: null, pd: null };
+  var EMPTY = function () { return { midbrain: null, pons: null, scp: [null, null], mcp: [null, null], v3: [null, null, null], fh: null, md: null, pd: null }; };
+  var meas = ui.session.get(KEY) || EMPTY();
+  // values saved before the peduncles had a right and a left field
+  ["scp", "mcp"].forEach(function (id) { if (!Array.isArray(meas[id])) meas[id] = [meas[id] === undefined ? null : meas[id], null]; });
+  function isParts(id) { return !!(M().measurements[id] && M().measurements[id].parts); }
+  // the mean as written: third ventricle with 1 decimal (6.0 mm), the peduncles with up to 2 (3.15 mm)
+  function meanText(id) { var x = measure(meas, id); return id === "v3" ? fixed(x, 1) : String(roundTo(x, 2)); }
 
   function srcLink(src) {
     if (src.indexOf(";") > 0) {                        // several sources: "Peralta 2022; Chougar 2024"
@@ -105,43 +115,46 @@
   // How to measure one measurement: title, example image, steps, method
   function howtoCard(key) {
     var hw = M().howto[key];
-    if (!hw) return h("img", { src: "img/" + key, alt: "How to measure" });
+    if (!hw) return h("img", { src: "img/" + key, alt: t("How to measure") });
     var img = key.indexOf(".") > 0 ? h("img", { src: "img/" + key, alt: hw.title }) : null;
     var methods = [];
     hw.method.forEach(function (s, i) { if (i) methods.push("; "); methods.push(srcLink(s)); });
     return h("section", { class: "howto info-content", "data-help": key }, h("h3", null, hw.title), img,
       h("ol", null, hw.steps.map(function (s) { return h("li", null, s); })),
-      h("p", { class: "credits" }, "Method: ", methods, "."));
+      h("p", { class: "credits" }, t("Method:") + " ", methods, "."));
   }
 
   // Result box, the same as the cognitive calculators: the name and value (the only large text), Copy result,
   // one sentence (dot as in the report: filled = meets the cutoff), short notes, and everything else folded away.
   // Three sizes only: value, sentence (15px), small grey text (13px).
   // measured: "Midbrain area = 100 mm²; pons area = 500 mm²" (added to Copy result only; the inputs are on screen)
+  function cutText(c, unit) { return opLabel(c.op) + " " + N(c.shown) + unit; }
   function resultBlock(r, measured) {
-    var cut = opLabel(r.prim.op) + " " + r.prim.shown + r.info.unit;
+    var cut = cutText(r.prim, r.info.unit);
     var cmp = favoursText(r.prim.favours, r.prim.versus);
     // "Meets the published cutoff (≥ 13.55 for PSP vs PD; Quattrone 2008)." States the comparison only, no diagnosis.
-    var verdict = r.verdictMet ? "Meets the published cutoff" : "Does not meet the published cutoff";
-    var sentence = [verdict + " (" + cut + " for " + cmp + "; ", srcLink(r.prim.source), ")."];
-    var copyText = r.info.name + " = " + r.valueTxt.trim() + ". " + verdict + " (" + cut + " for " + cmp + "; " + r.prim.source + ")." +
+    var verdict = r.verdictMet ? t("Meets the published cutoff") : t("Does not meet the published cutoff");
+    var sentence = tn("{verdict} ({cut} for {cmp}; {source}).", { verdict: verdict, cut: cut, cmp: cmp, source: srcLink(r.prim.source) });
+    var copyText = r.info.name + " = " + N(r.valueTxt.trim()) + ". " + t("{verdict} ({cut} for {cmp}; {source}).", { verdict: verdict, cut: cut, cmp: cmp, source: r.prim.source }) +
                    (measured ? " " + measured + "." : "");
 
     var notes = [];
     // "Meets the ≥ 12.85 cutoff for PSP rather than MSA-P (Quattrone 2008)." / "Meets the proposed values < 0.21 (Peralta 2022) and …"
-    var verb = r.prim.met ? "Does not meet the " : "Meets the ";
     var tested = r.opp.filter(function (c) { return c.tested; }), review = r.opp.filter(function (c) { return !c.tested; });
     tested.forEach(function (c) {
-      notes.push([verb + opLabel(c.op) + " " + c.shown + r.info.unit + " cutoff for " + favoursText(c.favours, c.versus) + " (", srcLink(c.source), ")."]);
+      var v = { cut: cutText(c, r.info.unit), cmp: favoursText(c.favours, c.versus), source: srcLink(c.source) };
+      notes.push(r.prim.met ? tn("Does not meet the {cut} cutoff for {cmp} ({source}).", v) : tn("Meets the {cut} cutoff for {cmp} ({source}).", v));
     });
     if (review.length) {
-      var rp = [verb + (review.length > 1 ? "proposed values " : "proposed value ")];
+      var list = [];
       review.forEach(function (c, i) {
-        if (i) rp.push(i === review.length - 1 ? " and " : ", ");
-        rp.push(opLabel(c.op) + " " + c.shown + r.info.unit + " (", srcLink(c.source), ")");
+        if (i) list.push(i === review.length - 1 ? " " + t("and") + " " : ", ");
+        list.push(cutText(c, r.info.unit) + " (", srcLink(c.source), ")");
       });
-      rp.push(review.length > 1 ? ", which were not tested in a cohort." : ", which was not tested in a cohort.");
-      notes.push(rp);
+      var one = review.length === 1, v2 = { list: h("span", null, list) };
+      notes.push(r.prim.met
+        ? (one ? tn("Does not meet the proposed value {list}, which was not tested in a cohort.", v2) : tn("Does not meet the proposed values {list}, which were not tested in a cohort.", v2))
+        : (one ? tn("Meets the proposed value {list}, which was not tested in a cohort.", v2) : tn("Meets the proposed values {list}, which were not tested in a cohort.", v2)));
     }
     var notesText = notes.map(function (n) { return n.map(function (x) { return typeof x === "string" ? x : x.textContent; }).join(""); });
     var abbr = abbrLine([r.info.name, verdict, cmp, notesText.join(" "), r.info.about.replace(/[{}]/g, ""),
@@ -150,39 +163,37 @@
     // all cutoffs: the note of each one goes under its comparison (four columns)
     var rows = r.cuts.map(function (c) {
       var n = [];
-      if (!c.tested && !c.note) n.push("Proposed from the literature, not tested in a cohort");
+      if (!c.tested && !c.note) n.push(t("Proposed from the literature, not tested in a cohort"));
       if (c.note) n.push(c.note);
       return h("tr", null,
-        h("td", { class: "nw" }, opLabel(c.op) + " " + c.shown + r.info.unit),
+        h("td", { class: "nw" }, cutText(c, r.info.unit)),
         h("td", null, favoursText(c.favours, c.versus), n.length ? h("span", { class: "mv-tn" }, n.join("; ")) : null),
         h("td", { class: "nw" }, srcLink(c.source)),
-        h("td", { class: "nw" + (c.met ? " met" : "") }, c.met ? [h("span", { class: "rr-dot", "aria-hidden": "true" }), "Met"] : "Not met"));
+        h("td", { class: "nw" + (c.met ? " met" : "") }, c.met ? [h("span", { class: "rr-dot", "aria-hidden": "true" }), t("Met")] : t("Not met")));
     });
 
     return h("div", { class: "calc-result mv-result" },
       h("div", { class: "cr-top" },
         h("button", { type: "button", class: "btn sm cr-copy", onclick: function () {
-          ui.copyText(copyText).then(function (ok) { ui.toast(ok ? "Result copied" : "Copy failed"); });
-        } }, "Copy result"),
+          ui.copyText(copyText).then(function (ok) { ui.toast(ok ? t("Result copied") : t("Copy failed")); });
+        } }, t("Copy result")),
         // the dot goes with the value: filled = meets the published cutoff (as Abnormal in the report)
         h("p", { class: "cr-head mv-head" + (r.verdictMet ? " met" : "") }, h("span", { class: "rr-dot", "aria-hidden": "true" }),
-          h("span", null, r.info.name + " = ", h("b", null, r.valueTxt)))),
+          h("span", null, r.info.name + " = ", h("b", null, N(r.valueTxt))))),
       h("p", { class: "cr-text mv-verdict" }, sentence),
       notes.length ? h("div", { class: "cr-note" }, notes.map(function (n) { return h("p", null, n); })) : null,
       h("details", { class: "mv-more" },
-        h("summary", null, "All cutoffs and sources"),
+        h("summary", null, t("All cutoffs and sources")),
         h("div", { class: "mv-more-body" },
           h("p", null, withLinks(r.info.about)),
           h("div", { class: "mv-table-wrap" }, h("table", { class: "mv-table" },
-            h("thead", null, h("tr", null, h("th", null, "Cutoff"), h("th", null, "Reported for"), h("th", null, "Source"), h("th", null, "This value"))),
+            h("thead", null, h("tr", null, h("th", null, t("Cutoff")), h("th", null, t("Reported for")), h("th", null, t("Source")), h("th", null, t("This value")))),
             h("tbody", null, rows))),
           h("div", { class: "mv-foot" },
             r.info.marker === "PSP" ? h("p", null, withLinks(M().notes.pspAge)) : null,
             h("p", null, M().notes.general),
-            abbr ? h("p", null, "Abbreviations: " + abbr + ".") : null))));
+            abbr ? h("p", null, t("Abbreviations: {list}.", { list: abbr })) : null))));
   }
-
-  var EMPTY = function () { return { midbrain: null, pons: null, scp: null, mcp: null, v3: [null, null, null], fh: null, md: null, pd: null }; };
 
   // One calculator per page (same frame as the cognitive calculators).
   // The measurements are kept while the tab is open, so a value typed in one
@@ -191,18 +202,18 @@
     var calc = M().calculators.filter(function (c) { return c.slug === slug; })[0];
     if (!calc) return false;
     var results = h("div", { class: "mv-results", "aria-live": "polite" });
-    var inputs = [], v3upd = null;
+    var inputs = [], partUpdaters = [];
     // Info (ⓘ next to the title): how to measure each measurement of this calculator, one after the other
     var keys = [];
     calc.inputs.forEach(function (id) { var k = M().measurements[id].help; if (keys.indexOf(k) < 0) keys.push(k); });
     var f = A.calcFrame(page, headSlot, "movement", slug, {
       title: calc.title,
       sub: M().indices[calc.index].formula,
-      ref: function () { return { title: "How to measure", node: h("div", { class: "howto-list" }, keys.map(howtoCard)) }; },
+      ref: function () { return { title: t("How to measure"), node: h("div", { class: "howto-list" }, keys.map(howtoCard)) }; },
       onClear: function () {
         meas = EMPTY(); ui.session.set(KEY, meas);
         inputs.forEach(function (inp) { inp.value = ""; });
-        if (v3upd) v3upd();
+        partUpdaters.forEach(function (f) { f(); });
         update();
       }
     });
@@ -226,19 +237,19 @@
       function typed(x) { return x !== null && x !== undefined && x !== ""; }
       calc.inputs.forEach(function (id) {
         var pr = M().measurements[id];
-        var raw = id === "v3" ? meas.v3 : [meas[id]];
-        if (raw.some(function (x) { return typed(x) && isNaN(positive(x)); })) { out.push(pr.short + ": enter a number above 0"); return; }
-        var v = id === "v3" ? v3Mean(meas) : positive(meas[id]);
-        if (!isNaN(v) && (v < pr.min || v > pr.max)) out.push(pr.short + " " + (+v.toFixed(10)) + pr.unit + " (usual " + pr.min + "–" + pr.max + pr.unit + ")");
+        var raw = Array.isArray(meas[id]) ? meas[id] : [meas[id]];
+        if (raw.some(function (x) { return typed(x) && isNaN(positive(x)); })) { out.push(t("{name}: enter a number above 0", { name: pr.short })); return; }
+        var v = measure(meas, id);
+        if (!isNaN(v) && (v < pr.min || v > pr.max)) out.push(t("{name} {value} (usual {range})", { name: pr.short, value: N(+v.toFixed(10)) + pr.unit, range: N(pr.min) + "–" + N(pr.max) + pr.unit }));
       });
-      if (out.length) results.appendChild(h("div", { class: "note-warn" }, "Check the measurements: " + out.join("; ") + "."));
+      if (out.length) results.appendChild(h("div", { class: "note-warn" }, t("Check the measurements: {list}.", { list: out.join("; ") })));
       if (!shown.length) return;          // no result until the measurements are entered
       // the measurements behind each result, for Copy result: "Midbrain area = 100 mm²; pons area = 500 mm²"
       function measured(k) {
         return (M().indices[k].uses || []).map(function (id, i) {
           var pr = M().measurements[id], name = pr.copy || pr.short, txt;
-          if (id === "v3") { var n = v3Parts(meas).length; txt = fixed(v3Mean(meas), 1) + pr.unit + (n > 1 ? " (mean of " + n + ")" : ""); }
-          else txt = String(positive(meas[id])) + pr.unit;
+          if (isParts(id)) { var n = parts(meas, id).length; txt = N(meanText(id)) + pr.unit + (n > 1 ? " " + t("(mean of {n})", { n: n }) : ""); }
+          else txt = N(String(positive(meas[id]))) + pr.unit;
           return (i ? name.charAt(0).toLowerCase() + name.slice(1) : name) + " = " + txt;
         }).join("; ");
       }
@@ -265,29 +276,32 @@
       return h("div", { class: "field mv-field" }, h("label", { class: "label", for: "mv-" + id }, pr.label),
         h("div", { class: "mv-row" }, inp));
     }
-    function v3Field() {
-      var pr = M().measurements.v3;
+    // a measurement in parts: one box per part (third ventricle: anterior, middle, posterior; peduncles: right, left)
+    // and, under them, the mean Aurora uses
+    function partsField(id) {
+      var pr = M().measurements[id], total = pr.parts.length;
       var mean = h("div", { class: "v3-mean" });
       function upd() {
-        var n = v3Parts(meas).length;
+        var n = parts(meas, id).length;
         mean.innerHTML = "";
         if (n) {
-          mean.appendChild(document.createTextNode("Mean " + fixed(v3Mean(meas), 1) + " mm"));
-          if (n < 3) mean.appendChild(h("span", { class: "warn" }, " (" + n + " of 3; the method uses 3)"));
+          mean.appendChild(document.createTextNode(t("Mean {value}", { value: N(meanText(id)) + pr.unit })));
+          if (n < total) mean.appendChild(h("span", { class: "warn" }, " " + t("({n} of {total}; the method uses {total})", { n: n, total: total })));
         }
       }
-      v3upd = upd;
-      var parts = M().v3Parts.map(function (lab, i) {
-        var inp = numInput("mv-v3-" + i, "Third ventricle width, " + lab.toLowerCase(), function () { return meas.v3[i]; }, function (v) { meas.v3[i] = v; upd(); });
+      partUpdaters.push(upd);
+      var boxes = pr.parts.map(function (lab, i) {
+        var inp = numInput("mv-" + id + "-" + i, t("{name}, {part}", { name: pr.copy || pr.short, part: lab.toLowerCase() }),
+                           function () { return meas[id][i]; }, function (v) { meas[id][i] = v; upd(); });
         inp.addEventListener("focus", function () { follow(pr.help); });
-        return h("div", null, h("label", { for: "mv-v3-" + i }, lab), inp);
+        return h("div", null, h("label", { for: "mv-" + id + "-" + i }, lab), inp);
       });
       upd();
-      return h("div", { class: "field mv-field wide" }, h("span", { class: "label" }, pr.label),
-        h("div", { class: "mv-row" }, h("div", { class: "v3-parts" }, parts)), mean);
+      return h("div", { class: "field mv-field" + (total > 2 ? " wide" : "") }, h("span", { class: "label" }, pr.label),
+        h("div", { class: "mv-row" }, h("div", { class: "v3-parts" }, boxes)), mean);
     }
 
-    f.body.appendChild(h("div", { class: "mv-group-fields" }, calc.inputs.map(function (id) { return id === "v3" ? v3Field() : numField(id); })));
+    f.body.appendChild(h("div", { class: "mv-group-fields" }, calc.inputs.map(function (id) { return isParts(id) ? partsField(id) : numField(id); })));
     f.body.appendChild(results);
     update();
     return true;

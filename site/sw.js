@@ -2,11 +2,11 @@
    Pages, code and content: network first (so edits show at once), cached copy when offline.
    Images and fonts: cached first (they rarely change).
    If you add or rename files, add them to FILES and change VERSION. */
-var VERSION = "aurora-2.0.4";
+var VERSION = "aurora-2.1.0";
 var FILES = [
   "./", "index.html", "manifest.webmanifest", "css/aurora.css",
   "content/pages.js", "content/cognitive-report.js", "content/info-cards.js", "content/movement-calculator.js", "content/protocols.js",
-  "js/ui.js", "js/xlsx.js", "js/cognitive-engine.js", "js/report-page.js", "js/calculators.js", "js/movement.js", "js/live-icon.js", "js/app.js",
+  "content/lang-pt.js", "js/i18n.js", "js/ui.js", "js/xlsx.js", "js/cognitive-engine.js", "js/report-page.js", "js/calculators.js", "js/movement.js", "js/live-icon.js", "js/app.js",
   "fonts/inter-latin-wght-normal.woff2", "fonts/inter-latin-ext-wght-normal.woff2",
   "icons/icon-128.png", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "icons/apple-touch-icon.png",
   "img/area_mes_pon.webp", "img/picture_3v.webp", "img/picture_erica1.webp", "img/picture_fazekas.webp",

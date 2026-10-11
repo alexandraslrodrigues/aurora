@@ -42,7 +42,7 @@
         "browserRequirements": "Requires JavaScript",
         "isAccessibleForFree": true,
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
-        "inLanguage": "en",
+        "inLanguage": ["en", "pt-PT"],
         "audience": { "@type": "Audience", "audienceType": "Radiologists and neuroradiologists" },
         "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
         "sameAs": ["https://github.com/alexandraslrodrigues/aurora", "https://doi.org/10.5281/zenodo.23285019"],
@@ -95,15 +95,15 @@
   <link rel="stylesheet" href="css/aurora.css">
 </head>
 <body>
-  <a class="skip" href="#app">Skip to content</a>
+  <a class="skip" href="#app" data-i18n>Skip to content</a>
   <header class="topbar">
-    <a class="brand" href="#/" aria-label="Aurora home">
+    <a class="brand" href="#/" aria-label="Aurora home" data-i18n-label>
       <img src="icons/icon-128.png" alt="" width="30" height="30">
       <span class="wordmark">aurora</span>
     </a>
-    <nav class="mainnav" aria-label="Main">
-      <a href="#/help" data-nav="help">Help</a>
-      <a href="#/about" data-nav="about">About</a>
+    <nav class="mainnav" aria-label="Main" data-i18n-label>
+      <a href="#/help" data-nav="help" data-i18n>Help</a>
+      <a href="#/about" data-nav="about" data-i18n>About</a>
       <button type="button" class="icon-btn theme-btn" id="theme-btn" aria-label="Night mode" title="Night mode"></button>
     </nav>
   </header>
@@ -115,11 +115,11 @@
          (css/aurora.css hides it until then). The list of links is written by tools/build-pages.js. -->
     <section class="site-summary" aria-labelledby="summary-title">
       <h1 id="summary-title">Aurora: structured neuroradiology reporting for cognitive and movement disorders</h1>
-      <p>Aurora is a free, open-access web tool for structured, reproducible brain MRI reports. It brings together published visual rating scales, calculators, recommended MRI protocols and reference images, each linked to its peer-reviewed source. Reports can be written in English (US) or Portuguese (Portugal).</p>
+      <p>Aurora is a free, open-access web tool for structured, reproducible brain MRI reports. It brings together published visual rating scales, calculators, recommended MRI protocols and reference images, each linked to its peer-reviewed source. The website and the reports are available in English (US) and Portuguese (Portugal).</p>
       <h2>Cognitive disorders</h2>
-      <p>A structured report of small vessel disease (white matter hyperintensities with the Fazekas scale, lacunes, recent small subcortical infarcts, microbleeds, cortical superficial siderosis, perivascular spaces, total SVD score) and brain atrophy, with copy and Excel export. Calculators for global cortical atrophy (GCA), medial temporal atrophy (MTA, with age-adjusted cut-offs), entorhinal cortical atrophy (ERICA) and posterior parietal atrophy (Koedam). A recommended MRI protocol for a suspected cognitive disorder.</p>
+      <p>A structured report of small vessel disease (white matter hyperintensities with the Fazekas scale, lacunes, recent small subcortical infarcts, microbleeds, cortical superficial siderosis, perivascular spaces, total SVD score) and brain atrophy, with copy and Excel export. Calculators for global cortical atrophy (GCA), medial temporal atrophy (MTA, with age-adjusted cutoffs), entorhinal cortical atrophy (ERICA) and posterior parietal atrophy (Koedam). A recommended MRI protocol for a suspected cognitive disorder.</p>
       <h2>Movement disorders</h2>
-      <p>Calculators for the midbrain/pons area ratio, MRPI, MRPI 2.0, the midbrain/pons diameter ratio and middle cerebellar peduncle width, each with the published cut-offs and their sources. A recommended MRI protocol for suspected parkinsonism.</p>
+      <p>Calculators for the midbrain/pons area ratio, MRPI, MRPI 2.0, the midbrain/pons diameter ratio and middle cerebellar peduncle width, each with the published cutoffs and their sources. A recommended MRI protocol for suspected parkinsonism.</p>
       <h2>Evidence and limits</h2>
       <p>Aurora is described in Rodrigues ASL, Lobo GG, Machado T, Pereira DJ. Aurora: Open-Access Web Application for Structured Neuroradiology Report and Score Calculation. <cite>AJNR Am J Neuroradiol</cite> 2026;47(2):419–423. <a href="https://doi.org/10.3174/ajnr.A8940">doi:10.3174/ajnr.A8940</a>. It is a reporting aid, not a certified medical device, and does not make diagnoses. What you enter stays in your browser.</p>
       <h2>Reference pages</h2>
@@ -147,7 +147,7 @@
   <dialog id="modal" class="modal" aria-labelledby="modal-title">
     <div class="modal-head">
       <h2 id="modal-title"></h2>
-      <button class="icon-btn" data-close aria-label="Close">✕</button>
+      <button class="icon-btn" data-close aria-label="Close" data-i18n-label>✕</button>
     </div>
     <div class="modal-body" id="modal-body"></div>
   </dialog>
@@ -159,7 +159,10 @@
   <script src="content/info-cards.js"></script>
   <script src="content/movement-calculator.js"></script>
   <script src="content/protocols.js"></script>
+  <!-- Translations of the interface (one file per language) -->
+  <script src="content/lang-pt.js"></script>
   <!-- Code -->
+  <script src="js/i18n.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/xlsx.js"></script>
   <script src="js/cognitive-engine.js"></script>

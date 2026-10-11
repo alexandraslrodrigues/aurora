@@ -31,28 +31,28 @@ Aurora.content.protocols = {
       sections: [
         {
           title: "Core",
-          cols: ["Sequence", "Plane", "Slice", "Look for"],
+          cols: ["Sequence", "Plane", "Thickness", "Look for"],
           rows: [
             ["3D T1", "Sagittal · coronal reformat perpendicular to the hippocampus", "1 mm isotropic", "MTA · GCA · Koedam · focal atrophy"],
             ["FLAIR", "3D or 2D axial", "1 mm if 3D", "White matter hyperintensities · infarcts"],
             ["T2", "Axial", "2D", "Lacunes vs perivascular spaces · other pathology"],
             ["T2*-GRE or SWI", "Axial", "3–5 mm if 2D", "Microbleeds · superficial siderosis"],
-            ["DWI + ADC", "Axial", "3–5 mm", "Acute infarct · CJD"]
+            ["DWI + ADC", "Axial", "3–5 mm", "Acute infarct · Creutzfeldt–Jakob disease"]
           ]
         },
         {
           title: "Optional",
-          cols: ["Sequence", "Plane", "Slice", "Look for"],
+          cols: ["Sequence", "Plane", "Thickness", "Look for"],
           rows: [
-            ["ASL", "Axial", "", "Temporoparietal (AD) or frontotemporal (FTD) hypoperfusion"],
-            ["T1 + contrast", "", "", "Only if CAA inflammation · infection · tumour"]
+            ["ASL", "Axial", "", "Temporoparietal or frontotemporal hypoperfusion (Alzheimer’s disease, frontotemporal dementia)"],
+            ["T1 + contrast", "", "", "Only if cerebral amyloid angiopathy-related inflammation · infection · tumor"]
           ]
         }
       ],
       notes: [],
-      abbreviations: "2D, two-dimensional; 3D, three-dimensional; AD, Alzheimer’s disease; ADC, apparent diffusion coefficient; " +
-        "ASL, arterial spin labelling; CAA, cerebral amyloid angiopathy; CJD, Creutzfeldt–Jakob disease; DWI, diffusion-weighted imaging; " +
-        "FLAIR, fluid-attenuated inversion recovery; FTD, frontotemporal dementia; GCA, global cortical atrophy; GRE, gradient echo; MTA, medial temporal atrophy; " +
+      abbreviations: "2D, two-dimensional; 3D, three-dimensional; ADC, apparent diffusion coefficient; " +
+        "ASL, arterial spin labeling; DWI, diffusion-weighted imaging; " +
+        "FLAIR, fluid-attenuated inversion recovery; GCA, global cortical atrophy; GRE, gradient echo; MTA, medial temporal atrophy; " +
         "SWI, susceptibility-weighted imaging; T, tesla",
       refs: [
         ["Vernooij 2019 · ESNR", "https://doi.org/10.1007/s00234-019-02188-y"],
@@ -69,19 +69,19 @@ Aurora.content.protocols = {
       sections: [
         {
           title: "Baseline",
-          cols: ["Sequence", "Plane", "Slice", "Look for"],
+          cols: ["Sequence", "Plane", "Thickness", "Look for"],
           rows: [
             ["3D T1", "Sagittal", "1 mm isotropic", "Atrophy"],
             ["T2", "Axial", "2D", "Other pathology"],
-            ["FLAIR", "2D or 3D", "", "White matter hyperintensities · vasogenic oedema"],
-            ["T2*-GRE", "Axial", "TE 15–20 ms at 3 T · 25–35 ms at 1.5 T", "Microbleeds · superficial siderosis · haemorrhage"],
+            ["FLAIR", "2D or 3D", "", "White matter hyperintensities · vasogenic edema"],
+            ["T2*-GRE", "Axial", "TE 15–20 ms at 3 T · 25–35 ms at 1.5 T", "Microbleeds · superficial siderosis · hemorrhage"],
             ["DWI + ADC", "Axial", "", "Infarct"],
             ["SWI", "Axial", "Optional", "Microbleeds"]
           ]
         },
         {
           title: "Monitoring",
-          cols: ["Sequence", "Plane", "Slice", "Look for"],
+          cols: ["Sequence", "Plane", "Thickness", "Look for"],
           rows: [
             ["FLAIR", "2D or 3D", "", "ARIA-E"],
             ["T2*-GRE", "Axial", "Same as baseline", "ARIA-H"],
@@ -104,7 +104,7 @@ Aurora.content.protocols = {
         "US: baseline within 12 months · donanemab infusion 12 not in the US label"
       ],
       abbreviations: "2D, two-dimensional; 3D, three-dimensional; ApoE4, apolipoprotein E ε4; ARIA, amyloid-related imaging abnormalities " +
-        "(-E, oedema or effusion; -H, haemosiderin deposition); DWI, diffusion-weighted imaging; FLAIR, fluid-attenuated inversion recovery; " +
+        "(-E, edema or effusion; -H, hemosiderin deposition); DWI, diffusion-weighted imaging; FLAIR, fluid-attenuated inversion recovery; " +
         "GRE, gradient echo; SWI, susceptibility-weighted imaging; T, tesla",
       refs: [
         ["Cogswell 2025 · ASNR", "https://doi.org/10.3174/ajnr.A8469"],
@@ -125,19 +125,19 @@ Aurora.content.protocols = {
       sections: [
         {
           title: "Core",
-          cols: ["Sequence", "Plane", "Slice", "Look for"],
+          cols: ["Sequence", "Plane", "Thickness", "Look for"],
           rows: [
             ["3D T1", "Sagittal 3D · reformats: true midsagittal (areas, diameters), parasagittal (MCP), oblique coronal tangent to the 4th ventricle floor (SCP), axial parallel to AC–PC (third ventricle, frontal horns)", "≤1 mm isotropic", "Planimetry · hummingbird sign"],
             ["T2", "Axial", "2D", "Hot cross bun · putamen · MCP · hyperintense putaminal rim only at 1.5 T (normal at 3 T)"],
-            ["FLAIR", "3D or 2D sagittal and axial", "", "Vascular lesions · NPH · MCP sign · at 3 T, a T2 rim that is vague or absent on FLAIR is likely normal"],
-            ["DWI + ADC", "Axial", "", "Putamen and MCP diffusivity · infarct · CJD"],
-            ["SWI", "Axial", "", "Putaminal hypointensity · microbleeds · mineralisation"],
+            ["FLAIR", "3D or 2D sagittal and axial", "", "Vascular lesions · normal pressure hydrocephalus · MCP sign · at 3 T, a T2 rim that is vague or absent on FLAIR is likely normal"],
+            ["DWI + ADC", "Axial", "", "Putamen and MCP diffusivity · infarct · Creutzfeldt–Jakob disease"],
+            ["SWI", "Axial", "", "Putaminal hypointensity · microbleeds · mineralization"],
             ["Nigral SWI", "Axial through the midbrain", "High resolution · 1.3–1.5 mm at 3 T · 1.6–1.8 mm at 1.5 T", "Dorsolateral nigral hyperintensity · swallow tail sign"]
           ]
         },
         {
           title: "Optional",
-          cols: ["Sequence", "Plane", "Slice", "Look for"],
+          cols: ["Sequence", "Plane", "Thickness", "Look for"],
           rows: [
             ["Neuromelanin T1 TSE", "Oblique axial perpendicular to the 4th ventricle floor · posterior commissure to inferior pons", "0.5 × 0.5 × 2.5 mm", "Substantia nigra · locus coeruleus"],
             ["DTI", "Axial", "", "MCP · SCP · putamen"]
@@ -145,9 +145,9 @@ Aurora.content.protocols = {
         }
       ],
       notes: [],
-      abbreviations: "2D, two-dimensional; 3D, three-dimensional; AC–PC, anterior commissure–posterior commissure; ADC, apparent diffusion coefficient; CJD, Creutzfeldt–Jakob disease; " +
+      abbreviations: "2D, two-dimensional; 3D, three-dimensional; AC–PC, anterior commissure–posterior commissure; ADC, apparent diffusion coefficient; " +
         "DTI, diffusion tensor imaging; DWI, diffusion-weighted imaging; FLAIR, fluid-attenuated inversion recovery; " +
-        "MCP, middle cerebellar peduncle; NPH, normal pressure hydrocephalus; SCP, superior cerebellar peduncle; " +
+        "MCP, middle cerebellar peduncle; SCP, superior cerebellar peduncle; " +
         "SWI, susceptibility-weighted imaging; T, tesla; TSE, turbo spin echo",
       refs: [
         ["Peralta 2022 · MDS", "https://doi.org/10.1002/mdc3.13354"],

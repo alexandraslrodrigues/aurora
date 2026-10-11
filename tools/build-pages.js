@@ -48,12 +48,12 @@ const ATROPHY = [
     description: "Global cortical atrophy (GCA, Pasquier) scale on brain MRI: grades 0–3, reference image and sources, with a free calculator for structured reports." },
   { key: "mta", path: "mta-score", app: "#/cognitive/calculators/mta",
     title: "Medial temporal atrophy (MTA) score",
-    lead: "Visual rating of medial temporal lobe atrophy on coronal T1-weighted MRI (Scheltens score): 0–4 per side, with age-adjusted cut-offs.",
-    description: "MTA score (Scheltens) on coronal T1 MRI: grades 0–4, age-adjusted cut-offs, reference image and sources, with a free calculator." },
+    lead: "Visual rating of medial temporal lobe atrophy on coronal T1-weighted MRI (Scheltens score): 0–4 per side, with age-adjusted cutoffs.",
+    description: "MTA score (Scheltens) on coronal T1 MRI: grades 0–4, age-adjusted cutoffs, reference image and sources, with a free calculator." },
   { key: "erica", path: "erica-score", app: "#/cognitive/calculators/erica",
     title: "Entorhinal cortical atrophy (ERICA) score",
     lead: "Visual rating of entorhinal cortex atrophy on coronal MRI (Enkirch score): 0–3 per side.",
-    description: "ERICA score for entorhinal cortex atrophy on MRI: grades 0–3, cut-off, reference image and sources, with a free calculator." },
+    description: "ERICA score for entorhinal cortex atrophy on MRI: grades 0–3, cutoff, reference image and sources, with a free calculator." },
   { key: "koedam", path: "koedam-score", app: "#/cognitive/calculators/koedam",
     title: "Posterior parietal atrophy (Koedam) score",
     lead: "Visual rating of posterior parietal atrophy on brain MRI (Koedam score): 0–3 per side.",
@@ -106,11 +106,19 @@ function plain(html) { return String(html).replace(/<[^>]+>/g, " ").replace(/\s+
 function figure(img, alt) {
   return "<figure><img src='/img/" + img + "' alt='" + esc(alt) + "' loading='lazy'></figure>";
 }
-function infoBlock(key, withImages) {          // definition, images and credits of an ⓘ card
+function cardAbbreviations(c) {                // as in the app (js/ui.js): abbreviations not already explained as "(DWI)"
+  const text = (c.title + " " + c.body).replace(/<[^>]+>/g, " "), list = A.content.infoAbbreviations || {};
+  return Object.keys(list).filter(function (a) {
+    return text.indexOf("(" + a + ")") < 0 && new RegExp("(^|[^A-Za-z0-9])" + a + "(?![A-Za-z0-9])").test(text);
+  }).map(function (a) { return a + ", " + list[a]; }).join("; ");
+}
+function infoBlock(key, withImages) {          // definition, images, abbreviations and credits of an ⓘ card
   const c = INFO[key];
   if (!c) return "";
+  const abbr = cardAbbreviations(c);
   return (withImages ? (c.images || []).map(function (i) { return figure(i, c.title); }).join("") : "") +
     "<div class='ref-body'>" + c.body + "</div>" +
+    (abbr ? "<p class='ref-note'>Abbreviations: " + esc(abbr) + ".</p>" : "") +
     "<div class='credits'>" + c.credits + "</div>";
 }
 
@@ -340,7 +348,8 @@ MV.calculators.forEach(function (calc) {
 });
 
 add("aurora", { path: ABOUT.path, title: ABOUT.title, description: ABOUT.description }, function () {
-  return { body: P.about.replace(/<button[^>]*data-copy-cite[^>]*>[\s\S]*?<\/button>/, "") };
+  // the static page has no message form or copy button: only the email address stays
+  return { body: P.about.replace(/<button[^>]*data-copy-cite[^>]*>[\s\S]*?<\/button>/, "").replace(/<span class='app-only'>[\s\S]*?<\/span>/, "") };
 });
 add("aurora", { path: HELP.path, title: HELP.title, description: HELP.description, articleClass: "help-page" }, function () {
   // the static page has no message button: point to the email address instead
